@@ -1,0 +1,7 @@
+Flask==3.0.3
+googlemaps==4.10.0
+requests==2.32.3
+python-dotenv==1.0.1
+staticmap==0.5.7
+xhtml2pdf==0.2.16
+Jinja2==3.1.4

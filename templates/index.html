@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ReportMyBizz — Google Business Profile Rank Report</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="topbar">
+    <div>
+      <h1>ReportMyBizz</h1>
+      <div class="tagline">Real Google rank &amp; profile audit reports — no dummy data</div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if not api_key_set %}
+      <div class="notice">
+        <strong>Setup needed:</strong> No Google Maps API key found. Copy
+        <code>.env.example</code> to <code>.env</code> and add your free key.
+        See README.md for step-by-step instructions.
+      </div>
+    {% endif %}
+
+    <div class="card">
+      <form action="{{ url_for('generate') }}" method="POST">
+        <label for="gbp_link">Public Google Business Profile / Maps link</label>
+        <input type="text" id="gbp_link" name="gbp_link"
+               placeholder="https://maps.app.goo.gl/xxxxx or full Maps URL or Place ID"
+               required>
+        <button type="submit">Generate Real Report</button>
+      </form>
+    </div>
+
+    {% if result %}
+    <div class="card">
+      <h2 style="color: var(--green-dark); margin-top:0;">{{ result.header.name }}</h2>
+      <p style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:14px; color:#555;">
+        {{ result.header.address }}
+      </p>
+
+      <div class="result-summary">
+        <div class="stat-box">
+          <div class="value">{{ result.geogrid.overall_average_rank if result.geogrid.overall_average_rank is not none else "N/F" }}</div>
+          <div class="label">Avg. Search Rank</div>
+        </div>
+        <div class="stat-box">
+          <div class="value">{{ result.score.overall_score }}%</div>
+          <div class="label">Profile Score</div>
+        </div>
+        <div class="stat-box">
+          <div class="value">{{ result.header.rating or "—" }}</div>
+          <div class="label">Rating ({{ result.header.review_count or 0 }} reviews)</div>
+        </div>
+        <div class="stat-box">
+          <div class="value">{{ result.profile_audit.completion_pct }}%</div>
+          <div class="label">Profile Completion</div>
+        </div>
+      </div>
+
+      <a class="download-btn" href="{{ url_for('download', run_id=result.run_id) }}">
+        ⬇ Download Full PDF Report
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <footer>
+    ReportMyBizz — built on the free Google Maps Platform tier. All figures are
+    pulled live; unavailable fields are labeled, never guessed.
+  </footer>
+</body>
+</html>

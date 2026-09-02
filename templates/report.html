@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @page {
+    size: A4;
+    margin: 28px 34px;
+  }
+  body {
+    font-family: Helvetica, Arial, sans-serif;
+    color: {{ brand.text }};
+    font-size: 10.5px;
+  }
+  h1, h2, h3 { font-family: Helvetica, Arial, sans-serif; margin: 0; }
+  .header-band {
+    background-color: {{ brand.green_dark }};
+    color: {{ brand.cream }};
+    padding: 16px 20px;
+    border-radius: 6px;
+  }
+  .header-band h1 { font-size: 20px; }
+  .header-band .biz-name { font-size: 15px; margin-top: 4px; }
+  .header-band .biz-meta { font-size: 9.5px; color: {{ brand.cream_dark }}; margin-top: 3px; }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: {{ brand.green_dark }};
+    margin: 18px 0 8px 0;
+    border-bottom: 1.5px solid {{ brand.green_light }};
+    padding-bottom: 4px;
+  }
+
+  table.kpi-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  table.kpi-table td {
+    width: 25%;
+    background-color: {{ brand.cream }};
+    border: 1px solid {{ brand.cream_dark }};
+    text-align: center;
+    padding: 12px 6px;
+  }
+  table.kpi-table .big { font-size: 20px; font-weight: bold; color: {{ brand.green_dark }}; }
+  table.kpi-table .small { font-size: 8.5px; color: #555; margin-top: 3px; }
+
+  table.data-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  table.data-table th {
+    background-color: {{ brand.green }};
+    color: {{ brand.cream }};
+    text-align: left;
+    padding: 6px 8px;
+    font-size: 9.5px;
+  }
+  table.data-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid {{ brand.cream_dark }};
+    font-size: 9.5px;
+  }
+  table.data-table tr:nth-child(even) td { background-color: {{ brand.cream }}; }
+
+  .status-complete { color: {{ brand.good }}; font-weight: bold; }
+  .status-incomplete { color: {{ brand.danger }}; font-weight: bold; }
+
+  .note {
+    font-size: 8.5px;
+    color: #777;
+    font-style: italic;
+  }
+
+  .map-block {
+    margin-top: 8px;
+    border: 1px solid {{ brand.cream_dark }};
+    padding: 8px;
+    border-radius: 6px;
+    background-color: {{ brand.cream }};
+  }
+  .map-block img { width: 100%; max-width: 460px; }
+
+  .unavailable-box {
+    background-color: {{ brand.cream_dark }};
+    border-left: 3px solid {{ brand.warn }};
+    padding: 8px 12px;
+    margin-top: 8px;
+    font-size: 9px;
+  }
+
+  .footer-note {
+    margin-top: 24px;
+    padding-top: 10px;
+    border-top: 1px solid {{ brand.cream_dark }};
+    font-size: 8px;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header-band">
+    <h1>ReportMyBizz — Google Search Rank &amp; Profile Report</h1>
+    <div class="biz-name">{{ header.name }}</div>
+    <div class="biz-meta">
+      {% if header.rating %}★ {{ header.rating }} ({{ header.review_count }} reviews) &nbsp;|&nbsp;{% endif %}
+      {{ header.address or "Address not available" }}
+    </div>
+  </div>
+
+  <table class="kpi-table">
+    <tr>
+      <td>
+        <div class="big">{{ geogrid.overall_average_rank if geogrid.overall_average_rank is not none else "N/F" }}</div>
+        <div class="small">Avg. Search Rank<br>({{ grid_size }}x{{ grid_size }} grid, {{ grid_radius_km }}km radius)</div>
+      </td>
+      <td>
+        <div class="big">{{ score.overall_score }}%</div>
+        <div class="small">Profile Score<br>(see formula below)</div>
+      </td>
+      <td>
+        <div class="big">{{ header.rating or "—" }}</div>
+        <div class="small">Google Rating<br>({{ header.review_count or 0 }} total reviews)</div>
+      </td>
+      <td>
+        <div class="big">{{ profile_audit.completion_pct }}%</div>
+        <div class="small">Profile Completion<br>({{ profile_audit.complete_count }}/{{ profile_audit.total_checked }} fields)</div>
+      </td>
+    </tr>
+  </table>
+
+  <div class="section-title">Your Rank by Keyword (live geogrid data)</div>
+  <table class="data-table">
+    <tr><th>Keyword</th><th>Avg. Rank</th><th>Found in</th></tr>
+    {% for kw, data in geogrid.by_keyword.items() %}
+    <tr>
+      <td>{{ kw }}</td>
+      <td>{{ data.average_rank if data.average_rank is not none else "Not found (20+)" }}</td>
+      <td>{{ data.found_count }} / {{ data.total_points }} grid points</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <div class="note">
+    Keywords are auto-derived from this business's own Google categories.
+    Rank is computed by querying Google's Places API from real
+    {{ grid_size }}x{{ grid_size }} grid points around the business — the same
+    geogrid method paid rank trackers use.
+  </div>
+
+  <div class="section-title">Competitors Ranking Above You (from live grid data)</div>
+  {% if geogrid.competitors %}
+  <table class="data-table">
+    <tr><th>Business</th><th>Avg. Rank</th><th>Appearances in Grid</th></tr>
+    {% for c in geogrid.competitors %}
+    <tr>
+      <td>{{ c.name }}</td>
+      <td>{{ c.average_rank }}</td>
+      <td>{{ c.appearances }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="note">No consistently higher-ranked competitors were found in this grid sweep.</div>
+  {% endif %}
+
+  <div class="section-title">Search Rank at Nearby Locations</div>
+  {% for kw, img in map_images.items() %}
+  <div class="map-block">
+    <strong>Keyword: {{ kw }}</strong> — Avg. Rank: {{ geogrid.by_keyword[kw].average_rank if geogrid.by_keyword[kw].average_rank is not none else "N/F" }}<br>
+    {% if img %}
+      <img src="{{ img }}">
+    {% else %}
+      <div class="note">Map image unavailable (map tile server unreachable at generation time). Rank data above is still real.</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <div class="section-title">Profile Completion Checklist (real fields only)</div>
+  <table class="data-table">
+    <tr><th>Field</th><th>Status</th><th>Note</th></tr>
+    {% for c in profile_audit.checklist %}
+    <tr>
+      <td>{{ c.label }}</td>
+      <td class="status-{{ c.status }}">{{ "Complete" if c.status == "complete" else "Incomplete" }}</td>
+      <td>{{ c.note or "" }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <div class="unavailable-box">
+    <strong>Fields not available from any public API:</strong>
+    <ul style="margin:6px 0 0 14px; padding:0;">
+      {% for u in profile_audit.unavailable %}
+      <li>{{ u.label }} — {{ u.note }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="section-title">Reviews</div>
+  <table class="kpi-table">
+    <tr>
+      <td>
+        <div class="big">{{ reviews.reviews_per_week_estimate if reviews.reviews_per_week_estimate is not none else "—" }}</div>
+        <div class="small">Est. Reviews / Week</div>
+      </td>
+      <td>
+        <div class="big">N/A</div>
+        <div class="small">Response Rate<br>(owner-only data)</div>
+      </td>
+      <td>
+        <div class="big">{{ reviews.sample_size }}</div>
+        <div class="small">Reviews in Public Sample</div>
+      </td>
+      <td>
+        <div class="big">{{ header.rating or "—" }}</div>
+        <div class="small">Overall Rating</div>
+      </td>
+    </tr>
+  </table>
+  <div class="note">
+    {{ reviews.reviews_per_week_note if reviews.reviews_per_week_note else "" }}
+    {{ reviews.response_rate_note }}
+  </div>
+
+  <div class="section-title">How the Profile Score Is Calculated</div>
+  <table class="data-table">
+    <tr><th>Component</th><th>Weight</th><th>Your Score</th></tr>
+    <tr><td>Search Rank</td><td>35%</td><td>{{ score.components.rank_score }}/100</td></tr>
+    <tr><td>Google Rating</td><td>25%</td><td>{{ score.components.rating_score }}/100</td></tr>
+    <tr><td>Review Volume</td><td>20%</td><td>{{ score.components.review_volume_score }}/100</td></tr>
+    <tr><td>Profile Completion</td><td>20%</td><td>{{ score.components.completion_score }}/100</td></tr>
+  </table>
+  <div class="note">
+    This formula is fully transparent (see core/scoring.py) and is calculated only from
+    the real data fetched above — no component is estimated or invented.
+  </div>
+
+  <div class="footer-note">
+    Generated by ReportMyBizz using the Google Maps Platform Places API (free tier) and
+    OpenStreetMap tiles. Rank figures reflect Google's public Places API ranking behavior,
+    which may differ slightly from the consumer Local Pack a human sees, since Google does
+    not publish that exact algorithm. Fields explicitly marked "Not available" require
+    Google Business Profile owner-level access and are not obtainable from any public source —
+    this report does not simulate or estimate those values.
+  </div>
+
+</body>
+</html>
