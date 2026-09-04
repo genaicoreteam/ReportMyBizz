@@ -234,6 +234,124 @@ footer {
   font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(250, 246, 236, 0.97);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: overlay-in 0.25s ease;
+}
+
+.loading-overlay[hidden] { display: none; }
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.loading-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 44px 48px;
+  box-shadow: 0 24px 70px rgba(31, 61, 43, 0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 320px;
+  text-align: center;
+}
+
+.radar {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radar-spin {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px dashed var(--green-light);
+  animation: radar-spin 5s linear infinite;
+}
+
+.radar-ring {
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  opacity: 0;
+  animation: radar-ping 2.1s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+.radar-ring.d2 { animation-delay: 0.7s; }
+.radar-ring.d3 { animation-delay: 1.4s; }
+
+.radar-core {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--green-dark);
+  z-index: 1;
+}
+
+@keyframes radar-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes radar-ping {
+  0%   { transform: scale(0.35); opacity: 0.9; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.loading-title {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--green-dark);
+  margin-top: 26px;
+}
+
+.loading-status {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 13px;
+  color: #6b7a70;
+  margin-top: 8px;
+  min-height: 18px;
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+
+.loading-status.fade { opacity: 0; }
+
+.loading-bar-track {
+  width: 210px;
+  height: 4px;
+  background: var(--cream-dark);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.loading-bar-fill {
+  width: 35%;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--green-light), var(--green));
+  animation: loading-slide 1.3s ease-in-out infinite;
+}
+
+@keyframes loading-slide {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(380%); }
+}
+
 @media (max-width: 600px) {
   .topbar {
     padding: 20px;
@@ -280,5 +398,14 @@ footer {
   .download-btn {
     display: block;
     text-align: center;
+  }
+
+  .loading-card {
+    padding: 32px 28px;
+    max-width: 260px;
+  }
+
+  .loading-bar-track {
+    width: 160px;
   }
 }

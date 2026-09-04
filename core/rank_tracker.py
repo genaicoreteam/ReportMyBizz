@@ -13,9 +13,19 @@ expose that exact algorithm publicly. We do NOT fabricate or smooth the
 numbers -- whatever position Google's API returns is what gets reported.
 """
 
-import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from config import MAX_RANK_DEPTH, NEARBY_SEARCH_RADIUS_M
 from core.grid_utils import haversine_m
+
+# Every (keyword, grid point) pair is one independent Nearby Search call --
+# a default 5x5 grid x 5 keywords is 125 of them. Run sequentially (as this
+# used to) that took over two minutes end to end, well past what a browser
+# or a serverless function's request timeout tolerates. They're fanned out
+# across a small thread pool instead: googlemaps.Client self-throttles to
+# ~60 queries/second internally regardless of caller thread count, so this
+# doesn't risk hammering Google -- it just stops leaving the CPU idle while
+# each call waits on network I/O.
+MAX_WORKERS = 15
 
 
 def derive_keywords(categories: list, max_keywords: int) -> list:
@@ -76,20 +86,34 @@ def rank_at_point(gmaps_client, lat: float, lng: float, keyword: str,
 
 
 def run_geogrid(gmaps_client, target_place_id: str, grid_points: list,
-                 keywords: list, request_delay_sec: float = 0.05):
-    keyword_results = {}
+                 keywords: list, max_workers: int = MAX_WORKERS):
     competitor_tally = {}
 
-    for keyword in keywords:
-        point_results = []
-        found_ranks = []
-        for (lat, lng) in grid_points:
-            rank, seen_above = rank_at_point(
-                gmaps_client, lat, lng, keyword, target_place_id
-            )
-            point_results.append({"lat": lat, "lng": lng, "rank": rank})
-            if rank is not None:
-                found_ranks.append(rank)
+    # Slots to fill in as results come back -- concurrent completion order
+    # is unpredictable, so each job carries its own point index home with it
+    # rather than relying on append order.
+    points_by_keyword = {kw: [None] * len(grid_points) for kw in keywords}
+
+    jobs = [
+        (keyword, point_idx, lat, lng)
+        for keyword in keywords
+        for point_idx, (lat, lng) in enumerate(grid_points)
+    ]
+
+    def _run(job):
+        keyword, point_idx, lat, lng = job
+        rank, seen_above = rank_at_point(gmaps_client, lat, lng, keyword, target_place_id)
+        return keyword, point_idx, lat, lng, rank, seen_above
+
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        futures = [pool.submit(_run, job) for job in jobs]
+        # Results are only ever written to shared state (points_by_keyword,
+        # competitor_tally) here in the main thread as each future resolves,
+        # never inside a worker -- so no locking is needed despite the
+        # concurrency above.
+        for future in as_completed(futures):
+            keyword, point_idx, lat, lng, rank, seen_above = future.result()
+            points_by_keyword[keyword][point_idx] = {"lat": lat, "lng": lng, "rank": rank}
 
             for pos, (pid, pname, plat, plng) in enumerate(seen_above, start=1):
                 if pid is None:
@@ -99,8 +123,10 @@ def run_geogrid(gmaps_client, target_place_id: str, grid_points: list,
                 )
                 entry["ranks"].append(pos)
 
-            time.sleep(request_delay_sec)
-
+    keyword_results = {}
+    for keyword in keywords:
+        point_results = points_by_keyword[keyword]
+        found_ranks = [p["rank"] for p in point_results if p["rank"] is not None]
         avg_rank = round(sum(found_ranks) / len(found_ranks), 1) if found_ranks else None
         keyword_results[keyword] = {
             "points": point_results,

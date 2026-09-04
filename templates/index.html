@@ -44,7 +44,7 @@
         <div class="selected-chip" id="selected-chip" hidden>
           ✓ Selected: <span id="selected-chip-text"></span>
         </div>
-        <button type="submit">Generate Real Report</button>
+        <button type="submit" id="generate-btn">Generate Real Report</button>
       </form>
     </div>
 
@@ -88,6 +88,21 @@
     ReportMyBizz — built on the free Google Maps Platform tier. All figures are
     pulled live; unavailable fields are labeled, never guessed.
   </footer>
+
+  <div class="loading-overlay" id="loading-overlay" hidden>
+    <div class="loading-card">
+      <div class="radar">
+        <div class="radar-spin"></div>
+        <div class="radar-ring"></div>
+        <div class="radar-ring d2"></div>
+        <div class="radar-ring d3"></div>
+        <div class="radar-core"></div>
+      </div>
+      <div class="loading-title">Building your report…</div>
+      <div class="loading-status" id="loading-status">Resolving your business on Google…</div>
+      <div class="loading-bar-track"><div class="loading-bar-fill"></div></div>
+    </div>
+  </div>
 
   <script>
     (function () {
@@ -245,6 +260,58 @@
 
       document.addEventListener("click", function (e) {
         if (e.target !== input && !list.contains(e.target)) hideList();
+      });
+    })();
+
+    (function () {
+      var form = document.getElementById("report-form");
+      var overlay = document.getElementById("loading-overlay");
+      var statusEl = document.getElementById("loading-status");
+      var button = document.getElementById("generate-btn");
+
+      // Each phrase mirrors an actual stage report_builder.py runs through,
+      // in order -- not a fake progress bar, just an honest narration of
+      // real work (grid search, review/profile audit, PDF render) that
+      // now legitimately takes several seconds.
+      var stages = [
+        "Resolving your business on Google…",
+        "Scanning the search grid around you…",
+        "Checking who outranks you nearby…",
+        "Auditing your profile completeness…",
+        "Rendering your PDF report…"
+      ];
+      var stageIndex = 0;
+      var stageTimer = null;
+
+      function nextStage() {
+        stageIndex = (stageIndex + 1) % stages.length;
+        statusEl.classList.add("fade");
+        setTimeout(function () {
+          statusEl.textContent = stages[stageIndex];
+          statusEl.classList.remove("fade");
+        }, 350);
+      }
+
+      form.addEventListener("submit", function () {
+        if (!form.checkValidity()) return; // let native validation block/show first
+        overlay.hidden = false;
+        button.disabled = true;
+        button.textContent = "Generating…";
+        stageIndex = 0;
+        statusEl.textContent = stages[0];
+        stageTimer = setInterval(nextStage, 3200);
+      });
+
+      // If the user navigates back to a cached version of this page while
+      // the overlay was showing (e.g. clicking "back" after downloading),
+      // make sure it doesn't stay stuck on screen.
+      window.addEventListener("pageshow", function (e) {
+        if (e.persisted) {
+          clearInterval(stageTimer);
+          overlay.hidden = true;
+          button.disabled = false;
+          button.textContent = "Generate Real Report";
+        }
       });
     })();
   </script>
