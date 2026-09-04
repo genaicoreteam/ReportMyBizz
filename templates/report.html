@@ -5,12 +5,12 @@
 <style>
   @page {
     size: A4;
-    margin: 30px 34px;
+    margin: 30pt 34pt;
   }
   body {
     font-family: Helvetica, Arial, sans-serif;
     color: {{ brand.text }};
-    font-size: 13.5px;
+    font-size: 13.5pt;
     background-color: {{ brand.page_bg }};
   }
   h1, h2, h3 { font-family: Helvetica, Arial, sans-serif; margin: 0; }
@@ -18,129 +18,141 @@
   .header-banner img { width: 100%; display: block; }
 
   .section-title {
-    font-size: 19px;
+    font-size: 19pt;
     font-weight: bold;
     color: {{ brand.text }};
-    margin: 24px 0 11px 0;
+    margin: 16pt 0 8pt 0;
+    -pdf-keep-with-next: true;
   }
   .section-sub {
-    font-size: 12px;
+    font-size: 12pt;
     color: {{ brand.muted }};
-    margin: -5px 0 10px 0;
+    margin: -5pt 0 10pt 0;
+    -pdf-keep-with-next: true;
   }
 
   /* ---- generic card shell (square corners -- this renderer doesn't
      support border-radius) ---- */
-  table.cards { width: 100%; border-collapse: separate; border-spacing: 10px 0; }
-  table.cards.stack { border-spacing: 0 10px; }
+  table.cards { width: 100%; border-collapse: separate; border-spacing: 10pt 0; }
+  table.cards.stack { border-spacing: 0 10pt; }
   .card {
-    border: 1px solid {{ brand.border }};
+    border: 1pt solid {{ brand.border }};
     background-color: {{ brand.card_bg }};
-    padding: 20px;
+    padding: 15pt;
   }
   .card-eyebrow {
-    font-size: 10.5px;
+    font-size: 10.5pt;
     font-weight: bold;
     color: {{ brand.muted }};
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1pt;
   }
   .card-title {
-    font-size: 17px;
+    font-size: 17pt;
     font-weight: bold;
     color: {{ brand.text }};
-    margin-top: 3px;
+    margin-top: 3pt;
   }
-  .card-note { font-size: 11.5px; color: {{ brand.muted }}; margin-top: 8px; line-height: 1.4; }
+  .card-note { font-size: 11.5pt; color: {{ brand.muted }}; margin-top: 5pt; line-height: 1.3; }
 
-  .big-number { font-size: 46px; font-weight: bold; line-height: 1; margin-top: 10px; color: {{ brand.text }}; }
-  .mid-number { font-size: 30px; font-weight: bold; line-height: 1; color: {{ brand.text }}; }
+  .big-number { font-size: 46pt; font-weight: bold; line-height: 1; margin-top: 10pt; color: {{ brand.text }}; }
+  .mid-number { font-size: 30pt; font-weight: bold; line-height: 1; color: {{ brand.text }}; }
 
   .badge {
     display: inline-block;
-    padding: 4px 13px;
-    font-size: 10.5px;
+    padding: 4pt 13pt;
+    font-size: 10.5pt;
     font-weight: bold;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.3pt;
   }
   .badge.muted { background-color: {{ brand.border }}; color: {{ brand.muted }}; }
 
-  .legend-mini td { text-align: left; padding-right: 22px; vertical-align: top; }
-  .legend-mini .dot { font-size: 16px; }
-  .legend-mini .label { font-size: 11.5px; font-weight: bold; color: {{ brand.text }}; margin-top: 3px; }
-  .legend-mini .sub { font-size: 10.5px; color: {{ brand.muted }}; }
+  .legend-mini td { text-align: left; padding-right: 22pt; vertical-align: top; }
+  .legend-mini .dot { font-size: 16pt; }
+  .legend-mini .label { font-size: 11.5pt; font-weight: bold; color: {{ brand.text }}; margin-top: 3pt; }
+  .legend-mini .sub { font-size: 10.5pt; color: {{ brand.muted }}; }
 
-  .legend-row { font-size: 11.5px; color: {{ brand.muted }}; margin-top: 14px; line-height: 1.9; }
-  .legend-row .dot { font-size: 14px; }
+  .legend-row { font-size: 11.5pt; color: {{ brand.muted }}; margin-top: 8pt; line-height: 1.6; }
+  .legend-row .dot { font-size: 14pt; }
 
   table.data-table { width: 100%; border-collapse: collapse; }
   table.data-table th {
     text-align: left;
-    padding: 8px 5px;
-    font-size: 11px;
+    padding: 8pt 5pt;
+    font-size: 11pt;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.4pt;
     color: {{ brand.muted }};
-    border-bottom: 1px solid {{ brand.border }};
+    border-bottom: 1pt solid {{ brand.border }};
   }
   table.data-table td {
-    padding: 11px 5px;
-    border-bottom: 1px solid {{ brand.border }};
-    font-size: 13px;
+    padding: 8pt 5pt;
+    border-bottom: 1pt solid {{ brand.border }};
+    font-size: 13pt;
   }
 
-  .note { font-size: 11.5px; color: {{ brand.muted }}; font-style: italic; line-height: 1.5; }
+  .note { font-size: 11.5pt; color: {{ brand.muted }}; font-style: italic; line-height: 1.5; }
 
-  .map-card { border: 1px solid {{ brand.border }}; margin-bottom: 10px; }
+  .map-card { border: 1pt solid {{ brand.border }}; margin-bottom: 6pt; }
   .map-caption {
     background-color: {{ brand.navy }};
     color: #fff;
-    padding: 11px 14px;
-    font-size: 12.5px;
+    padding: 11pt 14pt;
+    font-size: 12.5pt;
   }
   .map-caption .rank { font-weight: bold; }
-  .map-card img { width: 100%; display: block; }
+  /* xhtml2pdf silently ignores percentage widths on <img> tags placed
+     inside a table cell (it logs "getSize: Not a float '100%'" and
+     falls back to the image's native pixel size instead) -- unlike a
+     top-level image, which does resolve % correctly. That bug was
+     rendering every map at ~520pt wide regardless of its 50% column,
+     collapsing the intended 2-per-row grid into oversized, stacked
+     images and blowing the report out over extra, mostly-blank pages.
+     A fixed point width matching the real column size is the reliable
+     fix; height is left to scale automatically off the image's own
+     aspect ratio. */
+  .map-card img { width: 262pt; display: block; }
   .map-empty {
-    padding: 34px 12px;
+    padding: 34pt 12pt;
     text-align: center;
-    font-size: 12px;
+    font-size: 12pt;
     color: {{ brand.muted }};
     background-color: {{ brand.page_bg }};
   }
 
-  .checklist-item { padding: 6px 0; font-size: 13px; }
-  .checklist-item .mark { font-weight: bold; margin-right: 7px; }
+  .checklist-item { padding: 6pt 0; font-size: 13pt; }
+  .checklist-item .mark { font-weight: bold; margin-right: 7pt; }
 
   .unavailable-box {
     background-color: {{ brand.warn_bg }};
-    border-left: 3px solid {{ brand.warn }};
-    padding: 12px 16px;
-    margin-top: 12px;
-    font-size: 11.5px;
+    border-left: 3pt solid {{ brand.warn }};
+    padding: 12pt 16pt;
+    margin-top: 12pt;
+    font-size: 11.5pt;
     color: {{ brand.text }};
     line-height: 1.5;
   }
   .muted-box {
     background-color: {{ brand.page_bg }};
-    border-left: 3px solid {{ brand.border }};
-    padding: 10px 14px;
-    margin-top: 10px;
-    font-size: 11px;
+    border-left: 3pt solid {{ brand.border }};
+    padding: 10pt 14pt;
+    margin-top: 10pt;
+    font-size: 11pt;
     color: {{ brand.muted }};
     line-height: 1.5;
   }
 
   .footer-note {
-    margin-top: 26px;
-    padding-top: 10px;
-    border-top: 1px solid {{ brand.border }};
-    font-size: 9.5px;
+    margin-top: 26pt;
+    padding-top: 10pt;
+    border-top: 1pt solid {{ brand.border }};
+    font-size: 9.5pt;
     color: {{ brand.muted }};
     line-height: 1.5;
   }
 
-  ul.missing-list { margin: 8px 0 0 16px; padding: 0; }
-  ul.missing-list li { font-size: 12.5px; color: {{ brand.danger }}; margin-bottom: 4px; }
+  ul.missing-list { margin: 8pt 0 0 16pt; padding: 0; }
+  ul.missing-list li { font-size: 12.5pt; color: {{ brand.danger }}; margin-bottom: 4pt; }
 </style>
 </head>
 <body>
@@ -149,7 +161,7 @@
     <img src="{{ header_banner }}">
   </div>
 
-  <table class="cards" style="margin-top: 14px;">
+  <table class="cards" style="margin-top: 14pt;">
     <tr>
       <td width="50%" class="card">
         <div class="card-eyebrow">Google</div>
@@ -161,7 +173,7 @@
           Overall average rank across the {{ grid_size }}×{{ grid_size }} search grid
           for your top {{ keywords|length }} keywords.
         </div>
-        <table class="legend-mini" style="margin-top:18px;"><tr>
+        <table class="legend-mini" style="margin-top:10pt;"><tr>
           <td>
             <div class="dot" style="color: {{ brand.good }};">●</div>
             <div class="label">Good</div>
@@ -182,8 +194,8 @@
       <td width="50%" class="card" style="text-align: center;">
         <div class="card-eyebrow" style="text-align:left;">Google</div>
         <div class="card-title" style="text-align:left;">Profile Score</div>
-        <img src="{{ visuals.score_ring }}" style="width: 150px; height: 150px; margin-top: 8px;">
-        <div style="margin-top:6px;">
+        <img src="{{ visuals.score_ring }}" style="width: 150pt; height: 150pt; margin-top: 8pt;">
+        <div style="margin-top:6pt;">
           <span class="badge" style="background-color: {{ visuals.score_band_bg }}; color: {{ visuals.score_band_color }};">{{ visuals.score_band_label|upper }}</span>
         </div>
         <div class="card-note">Weighted from real rank, rating, review volume &amp; profile completion. Good businesses score above 90%.</div>
@@ -195,9 +207,9 @@
   <table class="cards">
     <tr>
       <td width="55%" class="card">
-        <div class="card-title" style="margin-bottom:8px;">Your rank for top {{ keywords|length }} keywords</div>
+        <div class="card-title" style="margin-bottom:8pt;">Your rank for top {{ keywords|length }} keywords</div>
         <table class="data-table">
-          <tr><th>Keyword</th><th>Avg. Rank</th></tr>
+          <tr><th width="65%">Keyword</th><th width="35%">Avg. Rank</th></tr>
           {% for kw, data in geogrid.by_keyword.items() %}
           <tr>
             <td style="color: {{ data.band_color }}; font-weight: bold;">{{ kw }}</td>
@@ -207,10 +219,10 @@
         </table>
       </td>
       <td width="45%" class="card">
-        <div class="card-title" style="margin-bottom:8px;">Competitors ranking higher than you</div>
+        <div class="card-title" style="margin-bottom:8pt;">Competitors ranking higher than you</div>
         {% if geogrid.competitors %}
         <table class="data-table">
-          <tr><th>Business</th><th>Avg. Rank</th></tr>
+          <tr><th width="65%">Business</th><th width="35%">Avg. Rank</th></tr>
           {% for c in geogrid.competitors %}
           <tr>
             <td>
@@ -279,37 +291,41 @@
     <tr>
       <td width="42%" class="card">
         <div class="card-title">Profile SEO Score</div>
-        <table style="width:100%; margin-top:10px;"><tr>
-          <td width="45%" style="text-align:center; vertical-align:top;">
-            <img src="{{ visuals.seo_ring }}" style="width: 120px; height: 120px;">
-            <div style="margin-top:8px;">
-              <span class="badge" style="background-color: {{ visuals.seo_band_bg }}; color: {{ visuals.seo_band_color }};">{{ visuals.seo_band_label|upper }}</span>
-            </div>
-          </td>
-          <td width="55%" style="vertical-align:top; padding-left:10px;">
-            <div class="card-note" style="margin-top:0;">Should be above 80%. Based on 4 real, checkable SEO fields --
-            {% if profile_audit.seo_missing %}not confirmed in:</div>
-            <ul class="missing-list">
-              {% for m in profile_audit.seo_missing %}<li>{{ m }}</li>{% endfor %}
-            </ul>
-            {% else %}all 4 confirmed present.</div>
-            {% endif %}
-          </td>
-        </tr></table>
+        <!-- A nested <table> here (instead of this float) silently breaks
+             xhtml2pdf's image sizing: an <img> inside a table-in-a-table
+             column gets rescaled against the wrong reference width no
+             matter what its own CSS width says (confirmed directly --
+             120pt and 88pt both collapsed to the same ~26pt). A floated
+             div at this single table-nesting level sizes correctly. -->
+        <div style="width:88pt; float:left; text-align:center; margin-top:10pt;">
+          <img src="{{ visuals.seo_ring }}" style="width: 88pt; height: 88pt;">
+          <div style="margin-top:8pt;">
+            <span class="badge" style="background-color: {{ visuals.seo_band_bg }}; color: {{ visuals.seo_band_color }};">{{ visuals.seo_band_label|upper }}</span>
+          </div>
+        </div>
+        <div style="margin-left:104pt; margin-top:10pt;">
+          <div class="card-note" style="margin-top:0;">Should be above 80%. Based on 4 real, checkable SEO fields --
+          {% if profile_audit.seo_missing %}not confirmed in:</div>
+          <ul class="missing-list">
+            {% for m in profile_audit.seo_missing %}<li>{{ m }}</li>{% endfor %}
+          </ul>
+          {% else %}all 4 confirmed present.</div>
+          {% endif %}
+        </div>
       </td>
       <td width="29%" class="card">
-        <div class="card-title" style="font-size:15px;">Services Added</div>
-        <div class="mid-number" style="margin-top:10px;">0</div>
-        <div style="margin-top:8px;">
+        <div class="card-title" style="font-size:15pt;">Services Added</div>
+        <div class="mid-number" style="margin-top:10pt;">0</div>
+        <div style="margin-top:8pt;">
           <span class="badge" style="background-color: {{ brand.danger_bg }}; color: {{ brand.danger }};">POOR</span>
         </div>
         <div class="card-note">Google's public API exposes no services list at all for any business -- this reflects
         what's independently visible, not a confirmed absence.</div>
       </td>
       <td width="29%" class="card">
-        <div class="card-title" style="font-size:15px;">Categories Added</div>
-        <div class="mid-number" style="margin-top:10px;">{{ profile_audit.additional_categories_count }}</div>
-        <div style="margin-top:8px;">
+        <div class="card-title" style="font-size:15pt;">Categories Added</div>
+        <div class="mid-number" style="margin-top:10pt;">{{ profile_audit.additional_categories_count }}</div>
+        <div style="margin-top:8pt;">
           <span class="badge" style="background-color: {{ visuals.categories_band_bg }}; color: {{ visuals.categories_band_color }};">{{ visuals.categories_band_label|upper }}</span>
         </div>
         <div class="card-note">Counted from Google's public place types -- may undercount the owner-curated category
@@ -318,31 +334,31 @@
     </tr>
   </table>
 
-  <table class="cards" style="margin-top:10px;">
+  <table class="cards" style="margin-top:10pt;">
     <tr>
       <td width="34%" class="card">
-        <div class="card-title" style="font-size:15px;">Reviews Per Week</div>
-        <div class="big-number" style="font-size:38px; margin-top:10px;">
-          {{ reviews.reviews_per_week_estimate if reviews.reviews_per_week_estimate is not none else "—" }}<span style="font-size:16px; font-weight:normal; color:{{ brand.muted }};">/week</span>
+        <div class="card-title" style="font-size:15pt;">Reviews Per Week</div>
+        <div class="big-number" style="font-size:38pt; margin-top:10pt;">
+          {{ reviews.reviews_per_week_estimate if reviews.reviews_per_week_estimate is not none else "—" }}<span style="font-size:16pt; font-weight:normal; color:{{ brand.muted }};">/week</span>
         </div>
-        <div style="margin-top:8px;">
+        <div style="margin-top:8pt;">
           <span class="badge" style="background-color: {{ visuals.reviews_band_bg }}; color: {{ visuals.reviews_band_color }};">{{ visuals.reviews_band_label|upper }}</span>
         </div>
         <div class="card-note">Estimated from the last {{ reviews.sample_size }} public reviews only.</div>
       </td>
       <td width="33%" class="card" style="text-align:center;">
-        <div class="card-title" style="font-size:15px; text-align:left;">Response Percentage</div>
-        <div class="big-number" style="margin-top:16px;">N/A</div>
-        <div style="margin-top:8px;">
+        <div class="card-title" style="font-size:15pt; text-align:left;">Response Percentage</div>
+        <div class="big-number" style="margin-top:16pt;">N/A</div>
+        <div style="margin-top:8pt;">
           <span class="badge muted">NOT AVAILABLE</span>
         </div>
         <div class="card-note">Whether the owner replies to reviews requires Business Profile owner-level
         access -- the public API this report runs on cannot see it at all, so no percentage is shown.</div>
       </td>
       <td width="33%" class="card" style="text-align:center;">
-        <div class="card-title" style="font-size:15px; text-align:left;">Suspension Risk</div>
-        <div class="big-number" style="margin-top:16px;">N/A</div>
-        <div style="margin-top:8px;">
+        <div class="card-title" style="font-size:15pt; text-align:left;">Suspension Risk</div>
+        <div class="big-number" style="margin-top:16pt;">N/A</div>
+        <div style="margin-top:8pt;">
           <span class="badge muted">NOT AVAILABLE</span>
         </div>
         <div class="card-note">Policy-violation and suspension status is not exposed by any public API --
@@ -354,33 +370,44 @@
   <div class="section-title">Your Profile Completion ({{ profile_audit.completion_pct }}%)</div>
   <table class="cards">
     <tr>
-      <td width="28%" class="card" style="text-align:center;">
-        <img src="{{ visuals.completion_ring }}" style="width: 120px; height: 120px;">
-        <div style="margin-top:8px;">
+      <td width="38%" class="card" style="text-align:center;">
+        <!-- xhtml2pdf subtracts a table cell's own padding from an
+             image's max width TWICE (confirmed by direct measurement:
+             an outer cell width of W with padding P caps any image
+             inside it at W-4P, not the correct W-2P) -- a narrower
+             column here silently hard-caps the ring well below its
+             declared size no matter how large that declaration is.
+             Widening the column keeps the cap above what's requested. -->
+        <img src="{{ visuals.completion_ring }}" style="width: 120pt; height: 120pt;">
+        <div style="margin-top:8pt;">
           <span class="badge" style="background-color: {{ visuals.completion_band_bg }}; color: {{ visuals.completion_band_color }};">{{ visuals.completion_band_label|upper }}</span>
         </div>
         <div class="card-note">{{ profile_audit.complete_count }} of {{ profile_audit.total_checked }} checkable fields complete.</div>
       </td>
-      <td width="72%" class="card">
+      <td width="62%" class="card">
         {% set half = (profile_audit.checklist|length / 2)|round(0,'ceil')|int %}
-        <table style="width:100%;"><tr>
-          <td width="50%" style="vertical-align:top; padding-right:10px;">
-            {% for c in profile_audit.checklist[:half] %}
-            <div class="checklist-item">
-              <span class="mark" style="color: {{ brand.good if c.status == 'complete' else brand.danger }};">{{ "✓" if c.status == "complete" else "✗" }}</span>
-              {{ c.label }}
-            </div>
-            {% endfor %}
-          </td>
-          <td width="50%" style="vertical-align:top; padding-left:10px;">
-            {% for c in profile_audit.checklist[half:] %}
-            <div class="checklist-item">
-              <span class="mark" style="color: {{ brand.good if c.status == 'complete' else brand.danger }};">{{ "✓" if c.status == "complete" else "✗" }}</span>
-              {{ c.label }}
-            </div>
-            {% endfor %}
-          </td>
-        </tr></table>
+        <!-- A nested <table> here breaks the completion ring's sizing in
+             the sibling column -- confirmed directly: a nested table
+             ANYWHERE in a table row throws off xhtml2pdf's column-width
+             resolution for the whole row, even for an image in a cell
+             that itself has no nested table. Two floated columns avoid
+             the nested table entirely. -->
+        <div style="width:48%; float:left;">
+          {% for c in profile_audit.checklist[:half] %}
+          <div class="checklist-item">
+            <span class="mark" style="color: {{ brand.good if c.status == 'complete' else brand.danger }};">{{ "✓" if c.status == "complete" else "✗" }}</span>
+            {{ c.label }}
+          </div>
+          {% endfor %}
+        </div>
+        <div style="width:48%; float:left; margin-left:4%;">
+          {% for c in profile_audit.checklist[half:] %}
+          <div class="checklist-item">
+            <span class="mark" style="color: {{ brand.good if c.status == 'complete' else brand.danger }};">{{ "✓" if c.status == "complete" else "✗" }}</span>
+            {{ c.label }}
+          </div>
+          {% endfor %}
+        </div>
       </td>
     </tr>
   </table>

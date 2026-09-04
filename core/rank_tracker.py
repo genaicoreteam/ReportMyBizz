@@ -27,6 +27,28 @@ from core.grid_utils import haversine_m
 # each call waits on network I/O.
 MAX_WORKERS = 15
 
+# Real Places listings often stuff extra keywords into the business name
+# itself, separated by "|" or "-" (a common local-SEO practice) -- e.g.
+# "Dr. X | General Physician & Diabetologist | Some Clinic". Left as-is,
+# a single competitor row can wrap 4-5 lines and blow the report's
+# two-column layout out to nearly a full page by itself, which is what
+# forces every section after it onto its own mostly-empty page. The
+# report only needs enough of the name to identify the business, not
+# the owner's full keyword-stuffed string -- so this trims to the
+# leading clean segment (and a hard character cap besides) purely for
+# display; nothing about the real ranking data changes.
+_NAME_MAX_LEN = 42
+
+
+def _clean_competitor_name(name: str) -> str:
+    for sep in (" | ", " – ", " -- ", " - "):
+        if sep in name:
+            name = name.split(sep)[0].strip()
+            break
+    if len(name) > _NAME_MAX_LEN:
+        name = name[:_NAME_MAX_LEN - 1].rstrip() + "…"
+    return name
+
 
 def derive_keywords(categories: list, max_keywords: int) -> list:
     GENERIC = {
@@ -140,7 +162,7 @@ def run_geogrid(gmaps_client, target_place_id: str, grid_points: list,
         avg = round(sum(data["ranks"]) / len(data["ranks"]), 1)
         competitors.append({
             "place_id": pid,
-            "name": data["name"],
+            "name": _clean_competitor_name(data["name"]),
             "average_rank": avg,
             "appearances": len(data["ranks"]),
             "lat": data["lat"],
@@ -157,5 +179,10 @@ def run_geogrid(gmaps_client, target_place_id: str, grid_points: list,
     return {
         "by_keyword": keyword_results,
         "overall_average_rank": overall_average,
-        "competitors": competitors[:5],
+        # Capped to match the top 3 pins actually numbered on the grid
+        # maps below (report_builder.py's map_competitors) -- showing
+        # more here than get a "#N" badge on the map reads as
+        # inconsistent, and a long tail of extra rows was also the
+        # single biggest driver of the report's page count/whitespace.
+        "competitors": competitors[:3],
     }
