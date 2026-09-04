@@ -5,20 +5,44 @@ Renders the grid-of-dots map for each keyword using the `staticmap`
 library, which draws on free OpenStreetMap tiles -- no Google Static Maps
 billing involved, keeping this on the free tier.
 
+Every marker is labeled directly on the image (rank number, or a
+competitor's badge number) instead of being a bare colored dot -- the
+map should be readable at a glance, not require a separate legend to
+decode. Real competitor locations (see rank_tracker.py) are plotted too,
+so you can see where they actually sit relative to the business instead
+of only reading their name in a table. In a dense downtown grid a
+competitor can be only meters from a search point, so competitor pins
+are nudged apart from grid dots and the "you" marker they'd otherwise
+sit exactly on top of.
+
 Images are returned as base64 data URIs rather than written to disk, so
 report generation needs no writable filesystem -- it runs the same on a
 laptop as it does in a read-only serverless function (e.g. Vercel).
 """
 
-import base64
-import io
+import math
 
 from staticmap import StaticMap, CircleMarker
+from staticmap.staticmap import _lon_to_x, _lat_to_y
+
+from core.chart_renderer import to_data_uri, draw_center_text
+from PIL import Image, ImageDraw, ImageFont
 
 GREEN = "#2F6B4F"
 AMBER = "#C79A3A"
 RED = "#B5533C"
 DARK = "#1F3D2B"
+COMPETITOR = "#2B4570"
+
+# Internal render scale: staticmap tiles are fixed-resolution, so we
+# render at 2x and downsample at the end for crisp anti-aliased text
+# and circles instead of blocky ones.
+SCALE = 2
+
+DOT_R = 30 * SCALE
+COMPETITOR_R = 26 * SCALE
+YOU_HALO_R = DOT_R + 8 * SCALE
+MIN_GAP = 4 * SCALE
 
 
 def _color_for_rank(rank):
@@ -31,25 +55,87 @@ def _color_for_rank(rank):
     return RED
 
 
+def _push_clear(x, y, r, obstacles):
+    """Nudges (x, y) radially away from any obstacle (ox, oy, o_radius)
+    it currently overlaps. A couple of passes is plenty for the handful
+    of markers on one map -- this isn't a general layout solver, just
+    enough so a competitor pin never lands exactly on top of a grid dot
+    or the "you" halo, which real-world density otherwise causes often."""
+    for _ in range(2):
+        for ox, oy, o_r in obstacles:
+            min_dist = r + o_r + MIN_GAP
+            dx, dy = x - ox, y - oy
+            dist = math.hypot(dx, dy)
+            if dist < min_dist:
+                if dist < 1e-6:
+                    dx, dy, dist = 1.0, 0.0, 1.0
+                scale = min_dist / dist
+                x, y = ox + dx * scale, oy + dy * scale
+    return x, y
+
+
 def render_grid_map(points_with_rank: list, center_lat: float, center_lng: float,
-                     width=520, height=420):
-    """Returns a `data:image/png;base64,...` URI ready to drop straight into
-    an <img src>, or None if the tile render failed."""
-    m = StaticMap(width, height, url_template=(
+                     competitors: list = None, width=520, height=400):
+    """Returns a `data:image/png;base64,...` URI ready to drop straight
+    into an <img src>, or None if the tile render failed.
+
+    `competitors` is an optional list of {name, lat, lng} dicts (already
+    filtered to real, nearby businesses -- see rank_tracker.py) plotted
+    as small numbered pins so their position relative to the business is
+    visible, not just their name in a table.
+    """
+    competitors = [c for c in (competitors or [])
+                   if c.get("lat") is not None and c.get("lng") is not None][:3]
+
+    w, h = width * SCALE, height * SCALE
+    m = StaticMap(w, h, url_template=(
         "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
     ))
 
     for p in points_with_rank:
-        color = _color_for_rank(p["rank"])
-        m.add_marker(CircleMarker((p["lng"], p["lat"]), color, 16))
-
-    m.add_marker(CircleMarker((center_lng, center_lat), DARK, 20))
+        m.add_marker(CircleMarker((p["lng"], p["lat"]), _color_for_rank(p["rank"]), DOT_R))
 
     try:
         image = m.render()
-        buf = io.BytesIO()
-        image.save(buf, format="PNG")
-        encoded = base64.b64encode(buf.getvalue()).decode("ascii")
-        return f"data:image/png;base64,{encoded}"
     except Exception:
         return None
+
+    draw = ImageDraw.Draw(image)
+
+    def to_px(lat, lng):
+        return (m._x_to_px(_lon_to_x(lng, m.zoom)),
+                m._y_to_px(_lat_to_y(lat, m.zoom)))
+
+    grid_px = [to_px(p["lat"], p["lng"]) for p in points_with_rank]
+    cx, cy = to_px(center_lat, center_lng)
+
+    # The business's own location is one of the grid points (searches
+    # are run from it too, like any other point) -- rather than paint
+    # over its real rank dot, ring it with a halo so it reads as "you"
+    # without hiding the number underneath. Drawn before the labels
+    # below so the rings sit behind the text, not clipping through it.
+    for r, color, sw in ((YOU_HALO_R, DARK, 3 * SCALE),
+                         (DOT_R + 3 * SCALE, "white", 3 * SCALE)):
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=color, width=sw)
+
+    rank_font = ImageFont.load_default(size=11 * SCALE)
+    for (x, y), p in zip(grid_px, points_with_rank):
+        label = "20+" if p["rank"] is None else str(p["rank"])
+        draw_center_text(draw, label, rank_font, "white", (x, y))
+
+    # Competitors are drawn (not added as staticmap markers) so their
+    # on-image position can be nudged clear of anything they'd
+    # otherwise overlap -- a real, nearby competitor is very often only
+    # meters from a search point in a dense downtown grid.
+    obstacles = [(cx, cy, YOU_HALO_R)] + [(x, y, DOT_R) for x, y in grid_px]
+    badge_font = ImageFont.load_default(size=12 * SCALE)
+    for idx, c in enumerate(competitors, start=1):
+        x, y = to_px(c["lat"], c["lng"])
+        x, y = _push_clear(x, y, COMPETITOR_R, obstacles)
+        draw.ellipse([x - COMPETITOR_R, y - COMPETITOR_R, x + COMPETITOR_R, y + COMPETITOR_R],
+                     fill=COMPETITOR, outline="white", width=int(2.5 * SCALE))
+        draw_center_text(draw, str(idx), badge_font, "white", (x, y))
+        obstacles.append((x, y, COMPETITOR_R))
+
+    image = image.resize((width, height), Image.LANCZOS)
+    return to_data_uri(image)

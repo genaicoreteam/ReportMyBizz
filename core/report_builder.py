@@ -24,6 +24,7 @@ from core.review_analyzer import analyze_reviews
 from core.profile_auditor import audit_profile
 from core.scoring import compute_score
 from core.map_renderer import render_grid_map
+from core.report_visuals import build_visuals
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
@@ -69,11 +70,22 @@ def build_report(user_link: str) -> dict:
 
     run_id = uuid.uuid4().hex[:10]
 
+    # The same top few nearby competitors are plotted on every keyword's
+    # map (rank_tracker.py already filtered these to real businesses
+    # within the search radius -- no more out-of-town results mixed in).
+    map_competitors = [
+        c for c in geogrid["competitors"]
+        if c.get("lat") is not None and c.get("lng") is not None
+    ][:3]
+
     map_images = {}
     for kw, kw_data in geogrid["by_keyword"].items():
         map_images[kw] = render_grid_map(
-            kw_data["points"], header["lat"], header["lng"]
+            kw_data["points"], header["lat"], header["lng"],
+            competitors=map_competitors,
         )
+
+    visuals = build_visuals(geogrid, score, profile_audit, header, config.BRAND)
 
     context = {
         "header": header,
@@ -83,9 +95,12 @@ def build_report(user_link: str) -> dict:
         "profile_audit": profile_audit,
         "score": score,
         "map_images": map_images,
+        "map_competitors": map_competitors,
+        "visuals": visuals,
         "brand": config.BRAND,
         "grid_size": config.GRID_SIZE,
         "grid_radius_km": config.GRID_RADIUS_KM,
+        "nearby_radius_m": config.NEARBY_SEARCH_RADIUS_M,
     }
 
     pdf_bytes = _render_pdf(context)
