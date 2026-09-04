@@ -6,11 +6,22 @@ keyword count, etc).
 """
 
 import os
+import secrets
 from dotenv import load_dotenv
 
 load_dotenv()
 
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "").strip()
+
+# Flask signs session/flash cookies with this. It must stay stable across
+# requests -- on a serverless deployment each cold start is a fresh
+# process, so a key generated at import time (os.urandom(...)) differs
+# between invocations and silently breaks flash messages/sessions
+# whenever a redirect happens to land on a different instance than the
+# request that set it. Set FLASK_SECRET_KEY in the environment for any
+# deployed instance; the random fallback is fine for a single local
+# `python app.py` process.
+FLASK_SECRET_KEY = os.getenv("FLASK_SECRET_KEY", "").strip() or secrets.token_hex(24)
 
 GRID_SIZE = int(os.getenv("GRID_SIZE", 5))
 GRID_RADIUS_KM = float(os.getenv("GRID_RADIUS_KM", 3))

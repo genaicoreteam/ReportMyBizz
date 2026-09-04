@@ -9,7 +9,6 @@ Run:
 Then open http://127.0.0.1:5000
 """
 
-import os
 import traceback
 import googlemaps
 from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
@@ -19,7 +18,7 @@ from core.report_builder import build_report, ReportGenerationError
 from core.place_resolver import PlaceResolutionError, autocomplete_predictions
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = config.FLASK_SECRET_KEY
 
 
 @app.route("/", methods=["GET"])
