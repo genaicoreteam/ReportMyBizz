@@ -19,8 +19,6 @@ MAX_RANK_DEPTH = 20
 
 MAX_KEYWORDS = 5
 
-OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")
-
 BRAND = {
     "green_dark": "#1F3D2B",
     "green": "#2F6B4F",

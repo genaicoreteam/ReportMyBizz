@@ -12,7 +12,7 @@ Then open http://127.0.0.1:5000
 import os
 import traceback
 import googlemaps
-from flask import Flask, render_template, request, send_file, flash, redirect, url_for, jsonify
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
 
 import config
 from core.report_builder import build_report, ReportGenerationError
@@ -67,16 +67,5 @@ def generate():
                             result=context)
 
 
-@app.route("/download/<run_id>")
-def download(run_id):
-    pdf_path = os.path.join(config.OUTPUT_DIR, run_id, "ReportMyBizz_Report.pdf")
-    if not os.path.exists(pdf_path):
-        flash("Report not found -- please generate it again.", "error")
-        return redirect(url_for("index"))
-    return send_file(pdf_path, as_attachment=True,
-                      download_name="ReportMyBizz_Report.pdf")
-
-
 if __name__ == "__main__":
-    os.makedirs(config.OUTPUT_DIR, exist_ok=True)
     app.run(debug=True, port=5000)

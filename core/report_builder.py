@@ -7,6 +7,8 @@ templated-in as a guess. Where public data genuinely doesn't exist for a
 field, the report says so explicitly instead of showing a fabricated value.
 """
 
+import base64
+import io
 import os
 import uuid
 import googlemaps
@@ -66,16 +68,12 @@ def build_report(user_link: str) -> dict:
     )
 
     run_id = uuid.uuid4().hex[:10]
-    run_dir = os.path.join(config.OUTPUT_DIR, run_id)
-    os.makedirs(run_dir, exist_ok=True)
 
     map_images = {}
     for kw, kw_data in geogrid["by_keyword"].items():
-        img_path = os.path.join(run_dir, f"map_{kw.replace(' ', '_')}.png")
-        result_path = render_grid_map(
-            kw_data["points"], header["lat"], header["lng"], img_path
+        map_images[kw] = render_grid_map(
+            kw_data["points"], header["lat"], header["lng"]
         )
-        map_images[kw] = result_path
 
     context = {
         "header": header,
@@ -90,20 +88,23 @@ def build_report(user_link: str) -> dict:
         "grid_radius_km": config.GRID_RADIUS_KM,
     }
 
-    pdf_path = os.path.join(run_dir, "ReportMyBizz_Report.pdf")
-    _render_pdf(context, pdf_path)
-    context["pdf_path"] = pdf_path
+    pdf_bytes = _render_pdf(context)
+    context["pdf_base64"] = base64.b64encode(pdf_bytes).decode("ascii")
     context["run_id"] = run_id
 
     return context
 
 
-def _render_pdf(context: dict, pdf_path: str):
+def _render_pdf(context: dict) -> bytes:
+    """Renders the report entirely in memory -- no writable filesystem
+    needed, so this runs the same locally as it does in a read-only
+    serverless function (e.g. Vercel)."""
     env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
     template = env.get_template("report.html")
     html = template.render(**context)
 
-    with open(pdf_path, "wb") as f:
-        pisa_status = pisa.CreatePDF(src=html, dest=f)
+    buf = io.BytesIO()
+    pisa_status = pisa.CreatePDF(src=html, dest=buf)
     if pisa_status.err:
         raise ReportGenerationError("PDF generation failed while rendering the report.")
+    return buf.getvalue()

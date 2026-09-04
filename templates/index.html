@@ -74,7 +74,9 @@
         </div>
       </div>
 
-      <a class="download-btn" href="{{ url_for('download', run_id=result.run_id) }}">
+      <a class="download-btn"
+         href="data:application/pdf;base64,{{ result.pdf_base64 }}"
+         download="ReportMyBizz_Report.pdf">
         ⬇ Download Full PDF Report
       </a>
     </div>
