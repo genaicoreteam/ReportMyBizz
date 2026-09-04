@@ -11,11 +11,12 @@ Then open http://127.0.0.1:5000
 
 import os
 import traceback
-from flask import Flask, render_template, request, send_file, flash, redirect, url_for
+import googlemaps
+from flask import Flask, render_template, request, send_file, flash, redirect, url_for, jsonify
 
 import config
 from core.report_builder import build_report, ReportGenerationError
-from core.place_resolver import PlaceResolutionError
+from core.place_resolver import PlaceResolutionError, autocomplete_predictions
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -24,6 +25,21 @@ app.secret_key = os.urandom(24)
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html", api_key_set=bool(config.GOOGLE_MAPS_API_KEY))
+
+
+@app.route("/api/places/autocomplete", methods=["GET"])
+def places_autocomplete():
+    """Type-ahead used by the business-name dropdown on the home page.
+    Proxied server-side so the Maps API key never reaches the browser."""
+    query = request.args.get("q", "")
+    session_token = request.args.get("session", None)
+
+    if not config.GOOGLE_MAPS_API_KEY or len(query.strip()) < 3:
+        return jsonify({"predictions": []})
+
+    gmaps_client = googlemaps.Client(key=config.GOOGLE_MAPS_API_KEY)
+    predictions = autocomplete_predictions(query, gmaps_client, session_token)
+    return jsonify({"predictions": predictions})
 
 
 @app.route("/generate", methods=["POST"])

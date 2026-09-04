@@ -56,6 +56,42 @@ def _extract_name_and_area(url: str):
     return None
 
 
+def autocomplete_predictions(query: str, gmaps_client: googlemaps.Client,
+                              session_token: str = None) -> list:
+    """
+    Live "type-ahead" search used by the UI's business-name dropdown --
+    the same Places Autocomplete API that backs Google's own Place ID
+    Finder demo. Returns a plain list of {place_id, main_text,
+    secondary_text, description} dicts, newest Google data only (never
+    cached/guessed). Returns [] on any API error rather than raising, so
+    a flaky autocomplete call never blocks the user from typing/pasting
+    a link manually.
+    """
+    query = (query or "").strip()
+    if not query:
+        return []
+
+    try:
+        raw = gmaps_client.places_autocomplete(
+            input_text=query,
+            session_token=session_token,
+            types="establishment",
+        )
+    except Exception:
+        return []
+
+    predictions = []
+    for item in raw:
+        structured = item.get("structured_formatting", {})
+        predictions.append({
+            "place_id": item.get("place_id"),
+            "main_text": structured.get("main_text", item.get("description", "")),
+            "secondary_text": structured.get("secondary_text", ""),
+            "description": item.get("description", ""),
+        })
+    return predictions
+
+
 def resolve_place_id(user_input: str, gmaps_client: googlemaps.Client) -> str:
     user_input = user_input.strip()
 
