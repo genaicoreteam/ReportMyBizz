@@ -18,87 +18,86 @@
   .header-banner img { width: 100%; display: block; }
 
   .section-title {
-    font-size: 19pt;
+    font-size: 15pt;
     font-weight: bold;
     color: {{ brand.text }};
-    margin: 16pt 0 8pt 0;
+    background-color: {{ brand.page_bg }};
+    padding: 5pt 2pt;
+    margin: 8pt 0 5pt 0;
     -pdf-keep-with-next: true;
   }
   .section-sub {
-    font-size: 12pt;
+    font-size: 10pt;
     color: {{ brand.muted }};
-    margin: -5pt 0 10pt 0;
+    margin: -3pt 0 7pt 0;
     -pdf-keep-with-next: true;
   }
 
   /* ---- generic card shell (square corners -- this renderer doesn't
-     support border-radius) ---- */
-  table.cards { width: 100%; border-collapse: separate; border-spacing: 10pt 0; }
-  table.cards.stack { border-spacing: 0 10pt; }
+     support border-radius, so the soft-rounded look of the reference
+     isn't reproducible here; kept as a plain thin-bordered panel
+     instead of faking curves badly) ---- */
+  table.cards { width: 100%; border-collapse: separate; border-spacing: 8pt 0; }
+  table.cards.stack { border-spacing: 6pt 8pt; }
   .card {
     border: 1pt solid {{ brand.border }};
     background-color: {{ brand.card_bg }};
-    padding: 15pt;
+    padding: 8pt;
   }
   .card-eyebrow {
-    font-size: 10.5pt;
+    font-size: 8.5pt;
     font-weight: bold;
     color: {{ brand.muted }};
     text-transform: uppercase;
-    letter-spacing: 1pt;
+    letter-spacing: 0.8pt;
   }
   .card-title {
-    font-size: 17pt;
+    font-size: 13pt;
     font-weight: bold;
     color: {{ brand.text }};
-    margin-top: 3pt;
+    margin-top: 2pt;
   }
-  .card-note { font-size: 11.5pt; color: {{ brand.muted }}; margin-top: 5pt; line-height: 1.3; }
+  .card-note { font-size: 9pt; color: {{ brand.muted }}; margin-top: 3pt; line-height: 1.25; }
 
-  .big-number { font-size: 46pt; font-weight: bold; line-height: 1; margin-top: 10pt; color: {{ brand.text }}; }
-  .mid-number { font-size: 30pt; font-weight: bold; line-height: 1; color: {{ brand.text }}; }
+  .big-number { font-size: 32pt; font-weight: bold; line-height: 1; margin-top: 5pt; color: {{ brand.text }}; }
+  .mid-number { font-size: 22pt; font-weight: bold; line-height: 1; color: {{ brand.text }}; }
 
   .badge {
     display: inline-block;
-    padding: 4pt 13pt;
-    font-size: 10.5pt;
+    padding: 2pt 9pt;
+    font-size: 8.5pt;
     font-weight: bold;
     letter-spacing: 0.3pt;
   }
   .badge.muted { background-color: {{ brand.border }}; color: {{ brand.muted }}; }
 
-  .legend-mini td { text-align: left; padding-right: 22pt; vertical-align: top; }
-  .legend-mini .dot { font-size: 16pt; }
-  .legend-mini .label { font-size: 11.5pt; font-weight: bold; color: {{ brand.text }}; margin-top: 3pt; }
-  .legend-mini .sub { font-size: 10.5pt; color: {{ brand.muted }}; }
-
-  .legend-row { font-size: 11.5pt; color: {{ brand.muted }}; margin-top: 8pt; line-height: 1.6; }
-  .legend-row .dot { font-size: 14pt; }
+  .legend-row { font-size: 9pt; color: {{ brand.muted }}; margin-top: 6pt; line-height: 1.5; }
+  .legend-row .dot { font-size: 11pt; }
 
   table.data-table { width: 100%; border-collapse: collapse; }
   table.data-table th {
     text-align: left;
-    padding: 8pt 5pt;
-    font-size: 11pt;
+    padding: 4pt 4pt;
+    font-size: 8.5pt;
     text-transform: uppercase;
-    letter-spacing: 0.4pt;
+    letter-spacing: 0.3pt;
     color: {{ brand.muted }};
     border-bottom: 1pt solid {{ brand.border }};
   }
   table.data-table td {
-    padding: 8pt 5pt;
+    padding: 4pt 4pt;
     border-bottom: 1pt solid {{ brand.border }};
-    font-size: 13pt;
+    font-size: 10.5pt;
   }
 
-  .note { font-size: 11.5pt; color: {{ brand.muted }}; font-style: italic; line-height: 1.5; }
+  .note { font-size: 9.5pt; color: {{ brand.muted }}; font-style: italic; line-height: 1.4; }
 
-  .map-card { border: 1pt solid {{ brand.border }}; margin-bottom: 6pt; }
+  .map-card { border: 1pt solid {{ brand.border }}; }
   .map-caption {
     background-color: {{ brand.navy }};
     color: #fff;
-    padding: 11pt 14pt;
-    font-size: 12.5pt;
+    padding: 6pt 9pt;
+    font-size: 9.5pt;
   }
   .map-caption .rank { font-weight: bold; }
   /* xhtml2pdf silently ignores percentage widths on <img> tags placed
@@ -120,39 +119,39 @@
     background-color: {{ brand.page_bg }};
   }
 
-  .checklist-item { padding: 6pt 0; font-size: 13pt; }
-  .checklist-item .mark { font-weight: bold; margin-right: 7pt; }
+  .checklist-item { padding: 2pt 0; font-size: 10.5pt; }
+  .checklist-item .mark { font-weight: bold; margin-right: 5pt; }
 
   .unavailable-box {
     background-color: {{ brand.warn_bg }};
     border-left: 3pt solid {{ brand.warn }};
-    padding: 12pt 16pt;
-    margin-top: 12pt;
-    font-size: 11.5pt;
+    padding: 6pt 10pt;
+    margin-top: 6pt;
+    font-size: 9.5pt;
     color: {{ brand.text }};
-    line-height: 1.5;
+    line-height: 1.4;
   }
   .muted-box {
     background-color: {{ brand.page_bg }};
     border-left: 3pt solid {{ brand.border }};
-    padding: 10pt 14pt;
-    margin-top: 10pt;
-    font-size: 11pt;
+    padding: 8pt 11pt;
+    margin-top: 8pt;
+    font-size: 9pt;
     color: {{ brand.muted }};
-    line-height: 1.5;
+    line-height: 1.4;
   }
 
   .footer-note {
-    margin-top: 26pt;
-    padding-top: 10pt;
+    margin-top: 8pt;
+    padding-top: 5pt;
     border-top: 1pt solid {{ brand.border }};
-    font-size: 9.5pt;
+    font-size: 8pt;
     color: {{ brand.muted }};
-    line-height: 1.5;
+    line-height: 1.4;
   }
 
-  ul.missing-list { margin: 8pt 0 0 16pt; padding: 0; }
-  ul.missing-list li { font-size: 12.5pt; color: {{ brand.danger }}; margin-bottom: 4pt; }
+  ul.missing-list { margin: 4pt 0 0 14pt; padding: 0; }
+  ul.missing-list li { font-size: 9.5pt; color: {{ brand.danger }}; margin-bottom: 2pt; }
 </style>
 </head>
 <body>
@@ -161,7 +160,7 @@
     <img src="{{ header_banner }}">
   </div>
 
-  <table class="cards" style="margin-top: 14pt;">
+  <table class="cards" style="margin-top: 10pt;">
     <tr>
       <td width="50%" class="card">
         <div class="card-eyebrow">Google</div>
@@ -173,29 +172,17 @@
           Overall average rank across the {{ grid_size }}×{{ grid_size }} search grid
           for your top {{ keywords|length }} keywords.
         </div>
-        <table class="legend-mini" style="margin-top:10pt;"><tr>
-          <td>
-            <div class="dot" style="color: {{ brand.good }};">●</div>
-            <div class="label">Good</div>
-            <div class="sub">Top 5</div>
-          </td>
-          <td>
-            <div class="dot" style="color: {{ brand.warn }};">●</div>
-            <div class="label">Average</div>
-            <div class="sub">Under 10</div>
-          </td>
-          <td>
-            <div class="dot" style="color: {{ brand.danger }};">●</div>
-            <div class="label">Poor</div>
-            <div class="sub">Beyond 10</div>
-          </td>
-        </tr></table>
+        <div class="legend-row" style="margin-top:7pt;">
+          <span class="dot" style="color: {{ brand.good }};">●</span> Good (Top 5) &nbsp;&nbsp;
+          <span class="dot" style="color: {{ brand.warn }};">●</span> Average (Under 10) &nbsp;&nbsp;
+          <span class="dot" style="color: {{ brand.danger }};">●</span> Poor (Beyond 10)
+        </div>
       </td>
       <td width="50%" class="card" style="text-align: center;">
         <div class="card-eyebrow" style="text-align:left;">Google</div>
         <div class="card-title" style="text-align:left;">Profile Score</div>
-        <img src="{{ visuals.score_ring }}" style="width: 150pt; height: 150pt; margin-top: 8pt;">
-        <div style="margin-top:6pt;">
+        <img src="{{ visuals.score_ring }}" style="width: 92pt; height: 92pt; margin-top: 5pt;">
+        <div style="margin-top:4pt;">
           <span class="badge" style="background-color: {{ visuals.score_band_bg }}; color: {{ visuals.score_band_color }};">{{ visuals.score_band_label|upper }}</span>
         </div>
         <div class="card-note">Weighted from real rank, rating, review volume &amp; profile completion. Good businesses score above 90%.</div>
@@ -207,7 +194,7 @@
   <table class="cards">
     <tr>
       <td width="55%" class="card">
-        <div class="card-title" style="margin-bottom:8pt;">Your rank for top {{ keywords|length }} keywords</div>
+        <div class="card-title" style="margin-bottom:4pt;">Your rank for top {{ keywords|length }} keywords</div>
         <table class="data-table">
           <tr><th width="65%">Keyword</th><th width="35%">Avg. Rank</th></tr>
           {% for kw, data in geogrid.by_keyword.items() %}
@@ -219,7 +206,7 @@
         </table>
       </td>
       <td width="45%" class="card">
-        <div class="card-title" style="margin-bottom:8pt;">Competitors ranking higher than you</div>
+        <div class="card-title" style="margin-bottom:4pt;">Competitors ranking higher than you</div>
         {% if geogrid.competitors %}
         <table class="data-table">
           <tr><th width="65%">Business</th><th width="35%">Avg. Rank</th></tr>
@@ -239,19 +226,18 @@
     </tr>
   </table>
   <div class="section-sub">
-    Every competitor above was actually returned by Google within the {{ nearby_radius_m }}m
-    search radius of the point it was found at -- results outside that radius are discarded, so you won't see a
-    business from a different town credited as a "local" competitor.
+    Every competitor above was actually found by Google within {{ nearby_radius_m }}m of that point --
+    no out-of-town results counted as "local".
   </div>
 
   <div class="section-title">Your Search Rank at Nearby Locations</div>
   <div class="section-sub">
-    {{ grid_size }}×{{ grid_size }} grid, {{ grid_radius_km }}km radius. Each dot is a real simulated search from
-    that location; the number is the rank Google returned there.
+    {{ grid_size }}×{{ grid_size }} grid, {{ grid_radius_km }}km radius -- shown for your top {{ [keywords|length, 2]|min }} keyword{{ "s" if keywords|length > 1 else "" }}; every keyword's rank is still in the table above.
   </div>
 
   <table class="cards stack">
     {% set kw_list = geogrid.by_keyword.items()|list %}
+    {% set kw_list = kw_list[:2] %}
     {% for i in range(0, kw_list|length, 2) %}
     <tr>
       {% for kw, data in kw_list[i:i+2] %}
@@ -278,11 +264,10 @@
     <span class="dot" style="color: {{ brand.good }};">●</span> Top 5 &nbsp;&nbsp;
     <span class="dot" style="color: {{ brand.warn }};">●</span> 6–10 &nbsp;&nbsp;
     <span class="dot" style="color: {{ brand.danger }};">●</span> 11+ / not found &nbsp;&nbsp;
-    <span class="dot" style="color: {{ brand.navy }};">●</span> Your business (ringed on the map)
+    <span class="dot" style="color: {{ brand.navy }};">●</span> Your business (ringed)
     {% if map_competitors %}
-      <br>
-      {% for c in map_competitors %}<b style="color:{{ brand.grad_start }};">#{{ loop.index }}</b> {{ c.name }}{% if not loop.last %} &nbsp;&nbsp; {% endif %}{% endfor %}
-      <span style="color:{{ brand.muted }};">(purple pins on the maps above)</span>
+      &nbsp;&nbsp;
+      {% for c in map_competitors %}<b style="color:{{ brand.grad_start }};">#{{ loop.index }}</b> {{ c.name }}{% if not loop.last %} &nbsp; {% endif %}{% endfor %}
     {% endif %}
   </div>
 
@@ -297,13 +282,13 @@
              matter what its own CSS width says (confirmed directly --
              120pt and 88pt both collapsed to the same ~26pt). A floated
              div at this single table-nesting level sizes correctly. -->
-        <div style="width:88pt; float:left; text-align:center; margin-top:10pt;">
-          <img src="{{ visuals.seo_ring }}" style="width: 88pt; height: 88pt;">
-          <div style="margin-top:8pt;">
+        <div style="width:70pt; float:left; text-align:center; margin-top:6pt;">
+          <img src="{{ visuals.seo_ring }}" style="width: 70pt; height: 70pt;">
+          <div style="margin-top:5pt;">
             <span class="badge" style="background-color: {{ visuals.seo_band_bg }}; color: {{ visuals.seo_band_color }};">{{ visuals.seo_band_label|upper }}</span>
           </div>
         </div>
-        <div style="margin-left:104pt; margin-top:10pt;">
+        <div style="margin-left:82pt; margin-top:6pt;">
           <div class="card-note" style="margin-top:0;">Should be above 80%. Based on 4 real, checkable SEO fields --
           {% if profile_audit.seo_missing %}not confirmed in:</div>
           <ul class="missing-list">
@@ -314,55 +299,51 @@
         </div>
       </td>
       <td width="29%" class="card">
-        <div class="card-title" style="font-size:15pt;">Services Added</div>
-        <div class="mid-number" style="margin-top:10pt;">0</div>
-        <div style="margin-top:8pt;">
+        <div class="card-title" style="font-size:12pt;">Services Added</div>
+        <div class="mid-number" style="margin-top:5pt;">0</div>
+        <div style="margin-top:4pt;">
           <span class="badge" style="background-color: {{ brand.danger_bg }}; color: {{ brand.danger }};">POOR</span>
         </div>
-        <div class="card-note">Google's public API exposes no services list at all for any business -- this reflects
-        what's independently visible, not a confirmed absence.</div>
+        <div class="card-note">Google's public API exposes no services list for any business.</div>
       </td>
       <td width="29%" class="card">
-        <div class="card-title" style="font-size:15pt;">Categories Added</div>
-        <div class="mid-number" style="margin-top:10pt;">{{ profile_audit.additional_categories_count }}</div>
-        <div style="margin-top:8pt;">
+        <div class="card-title" style="font-size:12pt;">Categories Added</div>
+        <div class="mid-number" style="margin-top:5pt;">{{ profile_audit.additional_categories_count }}</div>
+        <div style="margin-top:4pt;">
           <span class="badge" style="background-color: {{ visuals.categories_band_bg }}; color: {{ visuals.categories_band_color }};">{{ visuals.categories_band_label|upper }}</span>
         </div>
-        <div class="card-note">Counted from Google's public place types -- may undercount the owner-curated category
-        list shown in the GBP dashboard.</div>
+        <div class="card-note">From Google's public place types -- may undercount the GBP dashboard list.</div>
       </td>
     </tr>
   </table>
 
-  <table class="cards" style="margin-top:10pt;">
+  <table class="cards" style="margin-top:8pt;">
     <tr>
       <td width="34%" class="card">
-        <div class="card-title" style="font-size:15pt;">Reviews Per Week</div>
-        <div class="big-number" style="font-size:38pt; margin-top:10pt;">
-          {{ reviews.reviews_per_week_estimate if reviews.reviews_per_week_estimate is not none else "—" }}<span style="font-size:16pt; font-weight:normal; color:{{ brand.muted }};">/week</span>
+        <div class="card-title" style="font-size:12pt;">Reviews Per Week</div>
+        <div class="big-number" style="font-size:26pt; margin-top:5pt;">
+          {{ reviews.reviews_per_week_estimate if reviews.reviews_per_week_estimate is not none else "—" }}<span style="font-size:12pt; font-weight:normal; color:{{ brand.muted }};">/week</span>
         </div>
-        <div style="margin-top:8pt;">
+        <div style="margin-top:4pt;">
           <span class="badge" style="background-color: {{ visuals.reviews_band_bg }}; color: {{ visuals.reviews_band_color }};">{{ visuals.reviews_band_label|upper }}</span>
         </div>
         <div class="card-note">Estimated from the last {{ reviews.sample_size }} public reviews only.</div>
       </td>
       <td width="33%" class="card" style="text-align:center;">
-        <div class="card-title" style="font-size:15pt; text-align:left;">Response Percentage</div>
-        <div class="big-number" style="margin-top:16pt;">N/A</div>
-        <div style="margin-top:8pt;">
+        <div class="card-title" style="font-size:12pt; text-align:left;">Response Percentage</div>
+        <div class="big-number" style="font-size:26pt; margin-top:10pt;">N/A</div>
+        <div style="margin-top:4pt;">
           <span class="badge muted">NOT AVAILABLE</span>
         </div>
-        <div class="card-note">Whether the owner replies to reviews requires Business Profile owner-level
-        access -- the public API this report runs on cannot see it at all, so no percentage is shown.</div>
+        <div class="card-note">Requires Business Profile owner-level access -- not visible to any public API.</div>
       </td>
       <td width="33%" class="card" style="text-align:center;">
-        <div class="card-title" style="font-size:15pt; text-align:left;">Suspension Risk</div>
-        <div class="big-number" style="margin-top:16pt;">N/A</div>
-        <div style="margin-top:8pt;">
+        <div class="card-title" style="font-size:12pt; text-align:left;">Suspension Risk</div>
+        <div class="big-number" style="font-size:26pt; margin-top:10pt;">N/A</div>
+        <div style="margin-top:4pt;">
           <span class="badge muted">NOT AVAILABLE</span>
         </div>
-        <div class="card-note">Policy-violation and suspension status is not exposed by any public API --
-        this report does not guess at it.</div>
+        <div class="card-note">Policy-violation status isn't exposed by any public API.</div>
       </td>
     </tr>
   </table>
@@ -370,7 +351,7 @@
   <div class="section-title">Your Profile Completion ({{ profile_audit.completion_pct }}%)</div>
   <table class="cards">
     <tr>
-      <td width="38%" class="card" style="text-align:center;">
+      <td width="30%" class="card" style="text-align:center;">
         <!-- xhtml2pdf subtracts a table cell's own padding from an
              image's max width TWICE (confirmed by direct measurement:
              an outer cell width of W with padding P caps any image
@@ -378,36 +359,41 @@
              column here silently hard-caps the ring well below its
              declared size no matter how large that declaration is.
              Widening the column keeps the cap above what's requested. -->
-        <img src="{{ visuals.completion_ring }}" style="width: 120pt; height: 120pt;">
-        <div style="margin-top:8pt;">
+        <img src="{{ visuals.completion_ring }}" style="width: 92pt; height: 92pt;">
+        <div style="margin-top:5pt;">
           <span class="badge" style="background-color: {{ visuals.completion_band_bg }}; color: {{ visuals.completion_band_color }};">{{ visuals.completion_band_label|upper }}</span>
         </div>
         <div class="card-note">{{ profile_audit.complete_count }} of {{ profile_audit.total_checked }} checkable fields complete.</div>
       </td>
-      <td width="62%" class="card">
+      <td width="70%" class="card">
         {% set half = (profile_audit.checklist|length / 2)|round(0,'ceil')|int %}
-        <!-- A nested <table> here breaks the completion ring's sizing in
-             the sibling column -- confirmed directly: a nested table
-             ANYWHERE in a table row throws off xhtml2pdf's column-width
-             resolution for the whole row, even for an image in a cell
-             that itself has no nested table. Two floated columns avoid
-             the nested table entirely. -->
-        <div style="width:48%; float:left;">
-          {% for c in profile_audit.checklist[:half] %}
-          <div class="checklist-item">
-            <span class="mark" style="color: {{ brand.good if c.status == 'complete' else brand.danger }};">{{ "✓" if c.status == "complete" else "✗" }}</span>
-            {{ c.label }}
-          </div>
-          {% endfor %}
-        </div>
-        <div style="width:48%; float:left; margin-left:4%;">
-          {% for c in profile_audit.checklist[half:] %}
-          <div class="checklist-item">
-            <span class="mark" style="color: {{ brand.good if c.status == 'complete' else brand.danger }};">{{ "✓" if c.status == "complete" else "✗" }}</span>
-            {{ c.label }}
-          </div>
-          {% endfor %}
-        </div>
+        <!-- A nested <table style="width:100%"> here breaks the completion
+             ring's sizing in the sibling column (confirmed directly: it's
+             specifically the explicit width:100% that does it -- a plain
+             <table> with no width style, as used here, does not). A float
+             was tried instead but a float containing several stacked
+             block-level children doesn't reliably hold its column in
+             xhtml2pdf either (also confirmed directly: it silently
+             collapsed both columns into one). An unstyled nested table
+             is the one structure that measured correctly both ways. -->
+        <table><tr>
+          <td width="50%" style="vertical-align:top;">
+            {% for c in profile_audit.checklist[:half] %}
+            <div class="checklist-item">
+              <span class="mark" style="color: {{ brand.good if c.status == 'complete' else brand.danger }};">{{ "✓" if c.status == "complete" else "✗" }}</span>
+              {{ c.label }}
+            </div>
+            {% endfor %}
+          </td>
+          <td width="50%" style="vertical-align:top;">
+            {% for c in profile_audit.checklist[half:] %}
+            <div class="checklist-item">
+              <span class="mark" style="color: {{ brand.good if c.status == 'complete' else brand.danger }};">{{ "✓" if c.status == "complete" else "✗" }}</span>
+              {{ c.label }}
+            </div>
+            {% endfor %}
+          </td>
+        </tr></table>
       </td>
     </tr>
   </table>
@@ -430,13 +416,9 @@
   </div>
 
   <div class="footer-note">
-    Generated by ReportMyBizz using the Google Maps Platform Places API (free tier) and OpenStreetMap tiles.
-    Rank figures reflect Google's public Places API ranking behavior, which may differ slightly from the
-    consumer Local Pack a human sees, since Google does not publish that exact algorithm. "Services Added" and
-    "Categories Added" reflect what's independently visible through the public API, not a confirmed count from
-    the Business Profile dashboard. Fields marked "N/A" or "Not available" require Google Business Profile
-    owner-level access and are not obtainable from any public source -- this report does not simulate,
-    estimate, or guess at those values.
+    Generated by ReportMyBizz using the Google Maps Platform Places API and OpenStreetMap tiles. Rank figures
+    may differ slightly from the consumer Local Pack. "N/A" fields require Business Profile owner access and
+    aren't simulated or guessed at.
   </div>
 
 </body>

@@ -79,8 +79,13 @@ def build_report(user_link: str) -> dict:
         if c.get("lat") is not None and c.get("lng") is not None
     ][:3]
 
+    # Only the top 2 keywords get a rendered grid map in the PDF -- every
+    # keyword's rank is already in the table above, and a full grid map
+    # per keyword (5 shown previously) was the single biggest driver of
+    # the report's page count for little extra information, since the
+    # spatial pattern is usually similar across a business's keywords.
     map_images = {}
-    for kw, kw_data in geogrid["by_keyword"].items():
+    for kw, kw_data in list(geogrid["by_keyword"].items())[:2]:
         map_images[kw] = render_grid_map(
             kw_data["points"], header["lat"], header["lng"],
             competitors=map_competitors,
