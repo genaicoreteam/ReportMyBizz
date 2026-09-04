@@ -27,12 +27,15 @@ from staticmap.staticmap import _lon_to_x, _lat_to_y
 
 from core.chart_renderer import to_data_uri, draw_center_text
 from PIL import Image, ImageDraw, ImageFont
+import config
 
-GREEN = "#2F6B4F"
-AMBER = "#C79A3A"
-RED = "#B5533C"
-DARK = "#1F3D2B"
-COMPETITOR = "#2B4570"
+# Mirrors config.REPORT_BRAND so the map's dot colors always agree with
+# the rest of the report (KPI cards, keyword table, badges).
+GREEN = config.REPORT_BRAND["good"]
+AMBER = config.REPORT_BRAND["warn"]
+RED = config.REPORT_BRAND["danger"]
+DARK = config.REPORT_BRAND["navy"]
+COMPETITOR = config.REPORT_BRAND["grad_start"]
 
 # Internal render scale: staticmap tiles are fixed-resolution, so we
 # render at 2x and downsample at the end for crisp anti-aliased text

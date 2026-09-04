@@ -41,3 +41,24 @@ BRAND = {
     "warn": "#C79A3A",
     "good": "#2F6B4F",
 }
+
+# Color theme for the generated PDF report specifically (the web page
+# you're reading this on keeps its own green/cream identity -- this is
+# just the color language used *inside* each report: the header
+# gradient, score rings, and Good/Average/Poor badges).
+REPORT_BRAND = {
+    "grad_start": "#5A3FE0",   # header gradient, indigo -> blue
+    "grad_end": "#3E8EF7",
+    "navy": "#1E2233",         # map caption bars, "you" marker halo
+    "text": "#1F2430",
+    "muted": "#8B93A3",
+    "page_bg": "#F0F1F5",
+    "card_bg": "#FFFFFF",
+    "border": "#E9EAF0",
+    "good": "#3DA34D",
+    "warn": "#EAA23A",
+    "danger": "#EF4060",
+    "good_bg": "#E6F6E9",
+    "warn_bg": "#FDF1DE",
+    "danger_bg": "#FCE3EA",
+}

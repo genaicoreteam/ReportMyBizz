@@ -11,39 +11,21 @@
     font-family: Helvetica, Arial, sans-serif;
     color: {{ brand.text }};
     font-size: 10px;
+    background-color: {{ brand.page_bg }};
   }
   h1, h2, h3 { font-family: Helvetica, Arial, sans-serif; margin: 0; }
 
-  .header-band {
-    background-color: {{ brand.green_dark }};
-    color: {{ brand.cream }};
-    padding: 14px 18px;
-  }
-  .header-band .wordmark {
-    font-size: 9px;
-    font-weight: bold;
-    letter-spacing: 1.5px;
-    color: {{ brand.green_light }};
-  }
-  .header-band .tag {
-    font-size: 9px;
-    color: {{ brand.green_light }};
-  }
-  .header-band .biz-name { font-size: 19px; font-weight: bold; margin-top: 6px; }
-  .header-band .biz-meta { font-size: 9.5px; color: {{ brand.cream_dark }}; margin-top: 5px; }
-  .header-band .biz-meta .stars { color: #F0C24B; }
+  .header-banner img { width: 100%; display: block; }
 
   .section-title {
     font-size: 13px;
     font-weight: bold;
-    color: {{ brand.green_dark }};
-    margin: 16px 0 7px 0;
-    padding-bottom: 4px;
-    border-bottom: 2px solid {{ brand.green_dark }};
+    color: {{ brand.text }};
+    margin: 18px 0 8px 0;
   }
   .section-sub {
     font-size: 9px;
-    color: #6b7a70;
+    color: {{ brand.muted }};
     margin: -4px 0 8px 0;
   }
 
@@ -52,60 +34,66 @@
   table.cards { width: 100%; border-collapse: separate; border-spacing: 8px 0; }
   table.cards.stack { border-spacing: 0 8px; }
   .card {
-    border: 1px solid {{ brand.cream_dark }};
-    background-color: #fff;
+    border: 1px solid {{ brand.border }};
+    background-color: {{ brand.card_bg }};
     padding: 14px;
   }
-  .card-title {
-    font-size: 10px;
+  .card-eyebrow {
+    font-size: 8px;
     font-weight: bold;
-    color: {{ brand.green_dark }};
+    color: {{ brand.muted }};
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
   }
-  .card-note { font-size: 8.5px; color: #777; margin-top: 6px; }
+  .card-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: {{ brand.text }};
+    margin-top: 2px;
+  }
+  .card-note { font-size: 8.5px; color: {{ brand.muted }}; margin-top: 6px; }
 
-  .big-number { font-size: 34px; font-weight: bold; line-height: 1; margin-top: 6px; }
+  .big-number { font-size: 34px; font-weight: bold; line-height: 1; margin-top: 8px; color: {{ brand.text }}; }
 
   .badge {
     display: inline-block;
-    padding: 3px 9px;
+    padding: 3px 10px;
     font-size: 8px;
     font-weight: bold;
-    letter-spacing: 0.5px;
-    color: #fff;
+    letter-spacing: 0.3px;
   }
 
-  .legend-row { font-size: 8.5px; color: #555; margin-top: 10px; }
+  .legend-mini td { text-align: left; padding-right: 16px; vertical-align: top; }
+  .legend-mini .dot { font-size: 13px; }
+  .legend-mini .label { font-size: 8.5px; font-weight: bold; color: {{ brand.text }}; margin-top: 2px; }
+  .legend-mini .sub { font-size: 8px; color: {{ brand.muted }}; }
+
+  .legend-row { font-size: 8.5px; color: {{ brand.muted }}; margin-top: 10px; }
   .legend-row .dot { font-size: 11px; }
 
   table.data-table { width: 100%; border-collapse: collapse; }
   table.data-table th {
-    background-color: {{ brand.green_dark }};
-    color: {{ brand.cream }};
     text-align: left;
-    padding: 6px 8px;
+    padding: 6px 4px;
     font-size: 8.5px;
     text-transform: uppercase;
     letter-spacing: 0.4px;
+    color: {{ brand.muted }};
+    border-bottom: 1px solid {{ brand.border }};
   }
   table.data-table td {
-    padding: 6px 8px;
-    border-bottom: 1px solid {{ brand.cream_dark }};
+    padding: 8px 4px;
+    border-bottom: 1px solid {{ brand.border }};
     font-size: 9.5px;
   }
-  table.data-table tr:nth-child(even) td { background-color: {{ brand.cream }}; }
 
-  .status-complete { color: {{ brand.good }}; font-weight: bold; }
-  .status-incomplete { color: {{ brand.danger }}; font-weight: bold; }
+  .note { font-size: 8.5px; color: {{ brand.muted }}; font-style: italic; }
 
-  .note { font-size: 8.5px; color: #777; font-style: italic; }
-
-  .map-card { border: 1px solid {{ brand.cream_dark }}; margin-bottom: 8px; }
+  .map-card { border: 1px solid {{ brand.border }}; margin-bottom: 8px; }
   .map-caption {
-    background-color: {{ brand.green_dark }};
-    color: {{ brand.cream }};
-    padding: 7px 10px;
+    background-color: {{ brand.navy }};
+    color: #fff;
+    padding: 8px 10px;
     font-size: 9.5px;
   }
   .map-caption .rank { font-weight: bold; }
@@ -114,70 +102,75 @@
     padding: 30px 10px;
     text-align: center;
     font-size: 9px;
-    color: #999;
-    background-color: {{ brand.cream }};
+    color: {{ brand.muted }};
+    background-color: {{ brand.page_bg }};
   }
 
   .checklist-item { padding: 4px 0; font-size: 9.5px; }
   .checklist-item .mark { font-weight: bold; margin-right: 5px; }
 
   .unavailable-box {
-    background-color: {{ brand.cream_dark }};
+    background-color: {{ brand.warn_bg }};
     border-left: 3px solid {{ brand.warn }};
     padding: 8px 12px;
     margin-top: 10px;
     font-size: 8.5px;
+    color: {{ brand.text }};
   }
 
   .footer-note {
     margin-top: 20px;
     padding-top: 8px;
-    border-top: 1px solid {{ brand.cream_dark }};
+    border-top: 1px solid {{ brand.border }};
     font-size: 7.5px;
-    color: #888;
+    color: {{ brand.muted }};
   }
 </style>
 </head>
 <body>
 
-  <div class="header-band">
-    <div class="wordmark">REPORTMYBIZZ</div>
-    <div class="biz-name">{{ header.name }}</div>
-    <div class="biz-meta">
-      {% if header.rating %}
-        <span class="stars">
-          {% for i in range(1,6) %}<span style="color: {{ '#F0C24B' if i <= header.rating|round(0,'floor') else brand.green_light }};">★</span>{% endfor %}
-        </span>
-        {{ header.rating }} ({{ header.review_count or 0 }} reviews) &nbsp;·&nbsp;
-      {% endif %}
-      {{ header.address or "Address not available" }}
-    </div>
+  <div class="header-banner">
+    <img src="{{ header_banner }}">
   </div>
 
   <table class="cards" style="margin-top: 10px;">
     <tr>
       <td width="50%" class="card">
-        <div class="card-title">Google Search Rank</div>
-        <div class="big-number" style="color: {{ visuals.rank_band_color }};">
+        <div class="card-eyebrow">Google</div>
+        <div class="card-title">Search Rank</div>
+        <div class="big-number">
           {{ geogrid.overall_average_rank if geogrid.overall_average_rank is not none else "N/F" }}
         </div>
         <div class="card-note">
           Overall average rank across the {{ grid_size }}×{{ grid_size }} search grid
           for your top {{ keywords|length }} keywords.
         </div>
-        <div class="legend-row">
-          <span class="dot" style="color: {{ brand.good }};">●</span> Top 5 &nbsp;
-          <span class="dot" style="color: {{ brand.warn }};">●</span> 6–10 &nbsp;
-          <span class="dot" style="color: {{ brand.danger }};">●</span> 11+ / not found
-        </div>
+        <table class="legend-mini" style="margin-top:12px;"><tr>
+          <td>
+            <div class="dot" style="color: {{ brand.good }};">●</div>
+            <div class="label">Good</div>
+            <div class="sub">Top 5</div>
+          </td>
+          <td>
+            <div class="dot" style="color: {{ brand.warn }};">●</div>
+            <div class="label">Average</div>
+            <div class="sub">Under 10</div>
+          </td>
+          <td>
+            <div class="dot" style="color: {{ brand.danger }};">●</div>
+            <div class="label">Poor</div>
+            <div class="sub">Beyond 10</div>
+          </td>
+        </tr></table>
       </td>
       <td width="50%" class="card" style="text-align: center;">
+        <div class="card-eyebrow" style="text-align:left;">Google</div>
         <div class="card-title" style="text-align:left;">Profile Score</div>
-        <img src="{{ visuals.score_ring }}" style="width: 100px; height: 100px; margin-top: 4px;">
+        <img src="{{ visuals.score_ring }}" style="width: 100px; height: 100px; margin-top: 6px;">
         <div>
-          <span class="badge" style="background-color: {{ visuals.score_band_color }};">{{ visuals.score_band_label|upper }}</span>
+          <span class="badge" style="background-color: {{ visuals.score_band_bg }}; color: {{ visuals.score_band_color }};">{{ visuals.score_band_label|upper }}</span>
         </div>
-        <div class="card-note">Weighted from real rank, rating, review volume &amp; profile completion.</div>
+        <div class="card-note">Weighted from real rank, rating, review volume &amp; profile completion. Good businesses score above 90%.</div>
       </td>
     </tr>
   </table>
@@ -205,7 +198,7 @@
           {% for c in geogrid.competitors %}
           <tr>
             <td>
-              {% for mc in map_competitors %}{% if mc.place_id == c.place_id %}<span style="color: {{ brand.text }}; font-weight:bold;">#{{ loop.index }}</span> {% endif %}{% endfor %}{{ c.name }}
+              {% for mc in map_competitors %}{% if mc.place_id == c.place_id %}<span style="color: {{ brand.grad_start }}; font-weight:bold;">#{{ loop.index }}</span> {% endif %}{% endfor %}{{ c.name }}
             </td>
             <td style="font-weight: bold;">{{ c.average_rank }}</td>
           </tr>
@@ -257,11 +250,11 @@
     <span class="dot" style="color: {{ brand.good }};">●</span> Top 5 &nbsp;
     <span class="dot" style="color: {{ brand.warn }};">●</span> 6–10 &nbsp;
     <span class="dot" style="color: {{ brand.danger }};">●</span> 11+ / not found &nbsp;&nbsp;
-    <span class="dot" style="color: {{ brand.green_dark }};">●</span> Your business (ringed on the map)
+    <span class="dot" style="color: {{ brand.navy }};">●</span> Your business (ringed on the map)
     {% if map_competitors %}
       &nbsp;&nbsp;
-      {% for c in map_competitors %}<b>#{{ loop.index }}</b> {{ c.name }}{% if not loop.last %} &nbsp; {% endif %}{% endfor %}
-      <span style="color:#999;">(navy pins on the maps above)</span>
+      {% for c in map_competitors %}<b style="color:{{ brand.grad_start }};">#{{ loop.index }}</b> {{ c.name }}{% if not loop.last %} &nbsp; {% endif %}{% endfor %}
+      <span style="color:{{ brand.muted }};">(purple pins on the maps above)</span>
     {% endif %}
   </div>
 
@@ -271,7 +264,7 @@
       <td width="28%" class="card" style="text-align:center;">
         <img src="{{ visuals.completion_ring }}" style="width: 90px; height: 90px;">
         <div>
-          <span class="badge" style="background-color: {{ visuals.completion_band_color }};">{{ visuals.completion_band_label|upper }}</span>
+          <span class="badge" style="background-color: {{ visuals.completion_band_bg }}; color: {{ visuals.completion_band_color }};">{{ visuals.completion_band_label|upper }}</span>
         </div>
         <div class="card-note">{{ profile_audit.complete_count }} of {{ profile_audit.total_checked }} checkable fields complete.</div>
       </td>

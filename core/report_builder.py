@@ -25,6 +25,7 @@ from core.profile_auditor import audit_profile
 from core.scoring import compute_score
 from core.map_renderer import render_grid_map
 from core.report_visuals import build_visuals
+from core.chart_renderer import render_header_banner
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
@@ -85,10 +86,15 @@ def build_report(user_link: str) -> dict:
             competitors=map_competitors,
         )
 
-    visuals = build_visuals(geogrid, score, profile_audit, header, config.BRAND)
+    visuals = build_visuals(geogrid, score, profile_audit, header, config.REPORT_BRAND)
+    header_banner = render_header_banner(
+        header["name"], header["rating"], header["review_count"], header["address"],
+        config.REPORT_BRAND["grad_start"], config.REPORT_BRAND["grad_end"],
+    )
 
     context = {
         "header": header,
+        "header_banner": header_banner,
         "geogrid": geogrid,
         "keywords": keywords,
         "reviews": review_data,
@@ -97,7 +103,7 @@ def build_report(user_link: str) -> dict:
         "map_images": map_images,
         "map_competitors": map_competitors,
         "visuals": visuals,
-        "brand": config.BRAND,
+        "brand": config.REPORT_BRAND,
         "grid_size": config.GRID_SIZE,
         "grid_radius_km": config.GRID_RADIUS_KM,
         "nearby_radius_m": config.NEARBY_SEARCH_RADIUS_M,
