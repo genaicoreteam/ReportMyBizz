@@ -8,6 +8,11 @@ count of categories beyond the primary type) is marked as "Not visible
 via public API" rather than guessed as pass/fail.
 """
 
+# Google's own generic labels, not real business categories -- excluded
+# so "additional categories" only counts types that actually say
+# something about the business (mirrors rank_tracker.derive_keywords).
+_GENERIC_TYPES = {"point_of_interest", "establishment", "premise", "geocode", "store"}
+
 
 def audit_profile(details: dict, header: dict) -> dict:
     checklist = []
@@ -49,10 +54,30 @@ def audit_profile(details: dict, header: dict) -> dict:
     complete_count = sum(1 for c in checklist if c["status"] == "complete")
     completion_pct = round((complete_count / len(checklist)) * 100)
 
+    # Real (if imperfect) proxy for "additional categories": Google's
+    # `types` array minus its own generic labels and the primary type.
+    # It won't exactly match the owner-curated category list in the GBP
+    # dashboard (unavailable[1] above still says so), but it's actual
+    # API data, not a placeholder.
+    types = [t for t in (details.get("types") or []) if t not in _GENERIC_TYPES]
+    additional_categories_count = max(0, len(types) - 1)
+
+    seo_checks = [
+        ("Primary Category", bool(details.get("types"))),
+        ("Additional Category", additional_categories_count > 0),
+        ("Business Description", bool(header.get("description"))),
+        ("Website", bool(details.get("website"))),
+    ]
+    seo_missing = [label for label, ok in seo_checks if not ok]
+    seo_score_pct = round(sum(ok for _, ok in seo_checks) / len(seo_checks) * 100)
+
     return {
         "checklist": checklist,
         "unavailable": unavailable,
         "completion_pct": completion_pct,
         "complete_count": complete_count,
         "total_checked": len(checklist),
+        "additional_categories_count": additional_categories_count,
+        "seo_score_pct": seo_score_pct,
+        "seo_missing": seo_missing,
     }

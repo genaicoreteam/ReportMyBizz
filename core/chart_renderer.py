@@ -115,7 +115,7 @@ def _star_points(cx, cy, outer_r, inner_r):
 
 def render_header_banner(business_name: str, rating, review_count, address: str,
                           grad_start: str, grad_end: str,
-                          width: int = 1060, height: int = 190) -> str:
+                          width: int = 1060, height: int = 250) -> str:
     """The report's title band: a true left-to-right gradient with the
     business name, star rating, and address baked in as real pixels.
     xhtml2pdf supports neither CSS gradients nor a reliable way to
@@ -137,44 +137,44 @@ def render_header_banner(business_name: str, rating, review_count, address: str,
     pad_x = 34 * scale
     max_text_w = w - 2 * pad_x
 
-    wordmark_font = ImageFont.load_default(size=12 * scale)
-    draw.text((pad_x, 18 * scale), "REPORTMYBIZZ", font=wordmark_font, fill=(224, 219, 250))
+    wordmark_font = ImageFont.load_default(size=15 * scale)
+    draw.text((pad_x, 22 * scale), "REPORTMYBIZZ", font=wordmark_font, fill=(224, 219, 250))
 
     name_font, name_text = _fit_text(draw, business_name, max_text_w,
-                                      start_size=30 * scale, min_size=17 * scale)
-    name_y = 46 * scale
+                                      start_size=40 * scale, min_size=22 * scale)
+    name_y = 60 * scale
     draw.text((pad_x, name_y), name_text, font=name_font, fill="white")
     name_bottom = draw.textbbox((pad_x, name_y), name_text, font=name_font)[3]
 
-    meta_y = name_bottom + 14 * scale
+    meta_y = name_bottom + 18 * scale
     cursor_x = pad_x
 
     if rating:
-        star_r_outer, star_r_inner = 7 * scale, 3 * scale
-        star_gap = 18 * scale
+        star_r_outer, star_r_inner = 9 * scale, 4 * scale
+        star_gap = 23 * scale
         filled = round(rating)
         for i in range(5):
             sx = cursor_x + star_r_outer + i * star_gap
             sy = meta_y + star_r_outer
             color = (247, 197, 72) if i < filled else (255, 255, 255)
             draw.polygon(_star_points(sx, sy, star_r_outer, star_r_inner), fill=color)
-        cursor_x += star_gap * 5 + 8 * scale
+        cursor_x += star_gap * 5 + 10 * scale
 
-        meta_font = ImageFont.load_default(size=13 * scale)
+        meta_font = ImageFont.load_default(size=17 * scale)
         rating_text = f"{rating} ({review_count or 0} reviews)"
-        draw.text((cursor_x, meta_y + star_r_outer - 7 * scale), rating_text,
+        draw.text((cursor_x, meta_y + star_r_outer - 9 * scale), rating_text,
                    font=meta_font, fill="white")
         bbox = draw.textbbox((cursor_x, meta_y), rating_text, font=meta_font)
-        cursor_x = bbox[2] + 14 * scale
+        cursor_x = bbox[2] + 16 * scale
 
         sep_font = meta_font
-        draw.text((cursor_x, meta_y + star_r_outer - 7 * scale), "·",
+        draw.text((cursor_x, meta_y + star_r_outer - 9 * scale), "·",
                    font=sep_font, fill=(224, 219, 250))
-        cursor_x += 14 * scale
+        cursor_x += 16 * scale
 
     addr_font, addr_text = _fit_text(draw, address or "Address not available",
-                                      w - pad_x - cursor_x, start_size=13 * scale,
-                                      min_size=13 * scale)
+                                      w - pad_x - cursor_x, start_size=17 * scale,
+                                      min_size=15 * scale)
     draw.text((cursor_x, meta_y + 1 * scale), addr_text, font=addr_font, fill=(224, 219, 250))
 
     img = img.resize((width, height), Image.LANCZOS)

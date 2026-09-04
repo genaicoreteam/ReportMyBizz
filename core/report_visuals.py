@@ -49,12 +49,27 @@ def rating_band(rating):
     return _POOR
 
 
+def reviews_per_week_band(per_week):
+    """No verified external "industry average" to compare against, so
+    this is our own threshold (documented here, not attributed to any
+    outside source) rather than the reference's specific claim."""
+    if per_week is None:
+        return _POOR
+    if per_week >= 1:
+        return _GOOD
+    if per_week >= 0.3:
+        return _AVERAGE
+    return _POOR
+
+
 def build_visuals(geogrid: dict, score: dict, profile_audit: dict,
-                   header: dict, brand: dict) -> dict:
+                   header: dict, reviews: dict, brand: dict) -> dict:
     rank_label, rank_key = rank_band(geogrid["overall_average_rank"])
     score_label, score_key = pct_band(score["overall_score"])
     completion_label, completion_key = pct_band(profile_audit["completion_pct"])
     rating_label, rating_key = rating_band(header["rating"])
+    seo_label, seo_key = pct_band(profile_audit["seo_score_pct"])
+    reviews_label, reviews_key = reviews_per_week_band(reviews["reviews_per_week_estimate"])
 
     # Color the keyword table's rank cells with the same scale as the
     # map dots, so a glance at either tells the same story.
@@ -73,14 +88,26 @@ def build_visuals(geogrid: dict, score: dict, profile_audit: dict,
         "score_band_bg": brand[score_key + "_bg"],
         "score_ring": render_ring(score["overall_score"], brand[score_key],
                                    track_hex=brand[score_key + "_bg"], text_hex=brand["navy"],
-                                   size=132, thickness=15),
+                                   size=168, thickness=19),
         "completion_band_label": completion_label,
         "completion_band_color": brand[completion_key],
         "completion_band_bg": brand[completion_key + "_bg"],
         "completion_ring": render_ring(profile_audit["completion_pct"], brand[completion_key],
                                         track_hex=brand[completion_key + "_bg"], text_hex=brand["navy"],
-                                        size=104, thickness=12),
+                                        size=140, thickness=16),
         "rating_band_label": rating_label,
         "rating_band_color": brand[rating_key],
         "rating_band_bg": brand[rating_key + "_bg"],
+        "seo_band_label": seo_label,
+        "seo_band_color": brand[seo_key],
+        "seo_band_bg": brand[seo_key + "_bg"],
+        "seo_ring": render_ring(profile_audit["seo_score_pct"], brand[seo_key],
+                                 track_hex=brand[seo_key + "_bg"], text_hex=brand["navy"],
+                                 size=140, thickness=16),
+        "reviews_band_label": reviews_label,
+        "reviews_band_color": brand[reviews_key],
+        "reviews_band_bg": brand[reviews_key + "_bg"],
+        "categories_band_label": _GOOD[0] if profile_audit["additional_categories_count"] > 0 else _POOR[0],
+        "categories_band_color": brand["good" if profile_audit["additional_categories_count"] > 0 else "danger"],
+        "categories_band_bg": brand["good_bg" if profile_audit["additional_categories_count"] > 0 else "danger_bg"],
     }

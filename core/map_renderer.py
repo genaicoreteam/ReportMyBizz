@@ -15,6 +15,14 @@ competitor can be only meters from a search point, so competitor pins
 are nudged apart from grid dots and the "you" marker they'd otherwise
 sit exactly on top of.
 
+A search grid is a plain mathematical NxN square around the business,
+so some points can genuinely fall in a lake, a bay, or open sea -- the
+Nearby Search from that coordinate is still real and its result still
+counts, but a dot floating in the middle of a lake reads as broken.
+Grid dots are nudged onto the nearest dry pixel (sampling the map
+tile's own water color) purely for where they're *drawn*; the rank
+number they carry is still the one Google returned from the true point.
+
 Images are returned as base64 data URIs rather than written to disk, so
 report generation needs no writable filesystem -- it runs the same on a
 laptop as it does in a read-only serverless function (e.g. Vercel).
@@ -46,6 +54,12 @@ DOT_R = 30 * SCALE
 COMPETITOR_R = 26 * SCALE
 YOU_HALO_R = DOT_R + 8 * SCALE
 MIN_GAP = 4 * SCALE
+MAX_LAND_SEARCH = 90 * SCALE
+
+# OpenStreetMap's standard "carto" style renders all water (ocean, bays,
+# lakes) as this exact color -- confirmed by sampling real tiles.
+WATER_RGB = (170, 211, 223)
+WATER_TOLERANCE = 12
 
 
 def _color_for_rank(rank):
@@ -56,6 +70,38 @@ def _color_for_rank(rank):
     if rank <= 10:
         return AMBER
     return RED
+
+
+def _is_water(rgb):
+    r, g, b = rgb[:3]
+    return (abs(r - WATER_RGB[0]) <= WATER_TOLERANCE
+            and abs(g - WATER_RGB[1]) <= WATER_TOLERANCE
+            and abs(b - WATER_RGB[2]) <= WATER_TOLERANCE)
+
+
+def _nearest_land(image, x, y, max_radius):
+    """Searches outward in expanding rings for the nearest non-water
+    pixel, so a grid dot doesn't visually float in a lake or the sea.
+    Gives up and returns the original spot if no dry pixel is found
+    within range (a report covering a genuinely offshore point should
+    still show something rather than silently drop it)."""
+    w, h = image.size
+    ix, iy = int(round(x)), int(round(y))
+    if not (0 <= ix < w and 0 <= iy < h) or not _is_water(image.getpixel((ix, iy))):
+        return x, y
+
+    step = max(4, max_radius // 12)
+    r = step
+    while r <= max_radius:
+        samples = max(8, int(r / 6))
+        for i in range(samples):
+            angle = 2 * math.pi * i / samples
+            sx, sy = ix + r * math.cos(angle), iy + r * math.sin(angle)
+            six, siy = int(round(sx)), int(round(sy))
+            if 0 <= six < w and 0 <= siy < h and not _is_water(image.getpixel((six, siy))):
+                return sx, sy
+        r += step
+    return x, y
 
 
 def _push_clear(x, y, r, obstacles):
@@ -95,22 +141,33 @@ def render_grid_map(points_with_rank: list, center_lat: float, center_lng: float
         "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
     ))
 
+    # Tiny markers purely so staticmap's automatic zoom/extent framing
+    # spans the whole grid -- the actual visible circles are drawn by
+    # hand afterward (below) at each point's real or water-nudged
+    # position, not by staticmap's own marker rendering.
     for p in points_with_rank:
-        m.add_marker(CircleMarker((p["lng"], p["lat"]), _color_for_rank(p["rank"]), DOT_R))
+        m.add_marker(CircleMarker((p["lng"], p["lat"]), _color_for_rank(p["rank"]), 2 * SCALE))
 
     try:
         image = m.render()
     except Exception:
         return None
 
-    draw = ImageDraw.Draw(image)
-
     def to_px(lat, lng):
         return (m._x_to_px(_lon_to_x(lng, m.zoom)),
                 m._y_to_px(_lat_to_y(lat, m.zoom)))
 
-    grid_px = [to_px(p["lat"], p["lng"]) for p in points_with_rank]
-    cx, cy = to_px(center_lat, center_lng)
+    # Nudged purely off water -- not also spaced apart from each other.
+    # Pushing overlapping dots apart risked cascading a dot back into
+    # the water on the far side of a narrow shoreline; a business right
+    # on a lakefront can have most of its grid overlap a strip of dry
+    # land, and dots overlapping there is a far smaller visual problem
+    # than one sitting in the lake.
+    grid_draw_px = [_nearest_land(image, *to_px(p["lat"], p["lng"]), MAX_LAND_SEARCH)
+                    for p in points_with_rank]
+    cx, cy = _nearest_land(image, *to_px(center_lat, center_lng), MAX_LAND_SEARCH)
+
+    draw = ImageDraw.Draw(image)
 
     # The business's own location is one of the grid points (searches
     # are run from it too, like any other point) -- rather than paint
@@ -122,7 +179,9 @@ def render_grid_map(points_with_rank: list, center_lat: float, center_lng: float
         draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=color, width=sw)
 
     rank_font = ImageFont.load_default(size=11 * SCALE)
-    for (x, y), p in zip(grid_px, points_with_rank):
+    for (x, y), p in zip(grid_draw_px, points_with_rank):
+        color = _color_for_rank(p["rank"])
+        draw.ellipse([x - DOT_R, y - DOT_R, x + DOT_R, y + DOT_R], fill=color)
         label = "20+" if p["rank"] is None else str(p["rank"])
         draw_center_text(draw, label, rank_font, "white", (x, y))
 
@@ -130,7 +189,7 @@ def render_grid_map(points_with_rank: list, center_lat: float, center_lng: float
     # on-image position can be nudged clear of anything they'd
     # otherwise overlap -- a real, nearby competitor is very often only
     # meters from a search point in a dense downtown grid.
-    obstacles = [(cx, cy, YOU_HALO_R)] + [(x, y, DOT_R) for x, y in grid_px]
+    obstacles = [(cx, cy, YOU_HALO_R)] + [(x, y, DOT_R) for x, y in grid_draw_px]
     badge_font = ImageFont.load_default(size=12 * SCALE)
     for idx, c in enumerate(competitors, start=1):
         x, y = to_px(c["lat"], c["lng"])

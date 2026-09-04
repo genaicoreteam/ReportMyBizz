@@ -86,7 +86,7 @@ def build_report(user_link: str) -> dict:
             competitors=map_competitors,
         )
 
-    visuals = build_visuals(geogrid, score, profile_audit, header, config.REPORT_BRAND)
+    visuals = build_visuals(geogrid, score, profile_audit, header, review_data, config.REPORT_BRAND)
     header_banner = render_header_banner(
         header["name"], header["rating"], header["review_count"], header["address"],
         config.REPORT_BRAND["grad_start"], config.REPORT_BRAND["grad_end"],
